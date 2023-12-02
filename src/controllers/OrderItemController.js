@@ -1,5 +1,5 @@
 const Response = require("../response/Response");
-const OrderItemService = require("../services/OrderItemService");
+const OrderItemService = require("../services/OrderItemservice");
 const Status = require("../utils/Status");
 const Validator = require("../validator/Validator")
 
@@ -15,7 +15,6 @@ class OrderItemController {
             response.data
         ))
     }
-
 
     async getAllOrderItemByOrder(req, res) {
 
