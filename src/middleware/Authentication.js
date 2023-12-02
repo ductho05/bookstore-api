@@ -16,6 +16,7 @@ const authentication = (req, res, next) => {
                 ))
             } else {
                 req.email = decoded.email
+                req.id = decoded.id
                 next()
             }
         })

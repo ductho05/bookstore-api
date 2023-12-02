@@ -59,7 +59,8 @@ class UserController {
             res.status(response.statusCode).json(new Response(
                 response.status,
                 response.message,
-                response.data
+                response.data,
+                response.token
             ))
         }
     }
@@ -81,6 +82,7 @@ class UserController {
                 response.status,
                 response.message,
                 response.data,
+                response.token
             ))
         }
     }
@@ -101,7 +103,8 @@ class UserController {
             res.status(response.statusCode).json(new Response(
                 response.status,
                 response.message,
-                response.data
+                response.data,
+                response.token
             ))
         }
     }
@@ -256,7 +259,8 @@ class UserController {
 
             res.status(response.statusCode).json(new Response(
                 response.status,
-                response.message
+                response.message,
+                response.data
             ))
         }
     }

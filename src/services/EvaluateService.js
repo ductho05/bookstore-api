@@ -142,11 +142,13 @@ class EvaluateService {
         }
     }
 
-    async getByUser(id) {
+    async getByUser(email) {
 
         try {
 
-            const evaluateList = await Evaluate.find({ user: id })
+            const user = await User.findOne({ email }).exec()
+
+            const evaluateList = await Evaluate.find({ user: user._id })
                 .populate("user")
                 .populate({
                     path: "product",

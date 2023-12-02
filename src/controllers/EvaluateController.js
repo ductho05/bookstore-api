@@ -63,24 +63,15 @@ class EvaluateController {
 
     async getEvaluateByUser(req, res) {
 
-        const { error, value } = Validator.idValidator.validate(req.query.user)
+        const email = req.email
 
-        if (error) {
+        const response = await EvaluateService.getByUser(email)
 
-            res.status(400).json(new Response(
-                Status.ERROR,
-                error.message
-            ))
-        } else {
-
-            const response = await EvaluateService.getByUser(value)
-
-            res.status(response.statusCode).json(new Response(
-                response.status,
-                response.message,
-                response.data
-            ))
-        }
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+            response.data
+        ))
 
     }
 
