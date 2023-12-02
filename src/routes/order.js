@@ -2,8 +2,9 @@ const express = require("express")
 const router = express.Router()
 const authentication = require("../middleware/Authentication")
 const auhthorization = require("../middleware/Authorization")
+const orderControllers = require("../controllers/OrderControllers")
 
-const constants = require('../utils/api.js')
+
 // // local
 // //const urlapi = "http://localhost:3000/bookstore/api/v1"
 // // deloy
@@ -16,17 +17,9 @@ const constants = require('../utils/api.js')
 
 // let $ = require('jquery');
 // const request = require('request');
-const moment = require('moment');
-let config =
-{
-    vnp_TmnCode: "B5WWELNC",
-    vnp_HashSecret: "DBNOFJNUFFSKXILZEOKJFOISJTZVUCLY",
-    vnp_Url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
-    vnp_Api: "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction",
-    vnp_ReturnUrl: `${constants.urlapi}/orders/vnpay_return`
-}
 
-const orderControllers = require("../controllers/OrderControllers")
+
+
 
 router.get("/", auhthorization, orderControllers.getAllOrders)
 router.get("/id/:id", authentication, orderControllers.getOrderById)
@@ -40,8 +33,8 @@ router.post("/filter", authentication, orderControllers.getAllOrderByStatus)
 router.post("/filter/time", authentication, orderControllers.getAllOrderByTime)
 router.get("/status", authentication, orderControllers.getTotalOrderByStatus)
 router.post("/user", authentication, orderControllers.getAllOrderByUser)
-
-
+router.post('/create_payment_url', authentication, orderControllers.createPaymentUrl)
+router.get('/vnpay_return', authentication, orderControllers.vnpayReturn)
 // router.get('/', function(req, res, next){
 //     res.render('orderlist', { title: 'Danh sách đơn hàng' })
 // });
@@ -63,98 +56,98 @@ router.post("/user", authentication, orderControllers.getAllOrderByUser)
 // });
 
 
-router.post('/create_payment_url', function (req, res, next) {
+// router.post('/create_payment_url', function (req, res, next) {
 
-    process.env.TZ = 'Asia/Ho_Chi_Minh';
+//     process.env.TZ = 'Asia/Ho_Chi_Minh';
 
-    let date = new Date();
-    let createDate = moment(date).format('YYYYMMDDHHmmss');
+//     let date = new Date();
+//     let createDate = moment(date).format('YYYYMMDDHHmmss');
 
-    let ipAddr = req.headers['x-forwarded-for'] ||
-        req.connection.remoteAddress ||
-        req.socket.remoteAddress ||
-        req.connection.socket.remoteAddress;
+//     let ipAddr = req.headers['x-forwarded-for'] ||
+//         req.connection.remoteAddress ||
+//         req.socket.remoteAddress ||
+//         req.connection.socket.remoteAddress;
 
-    //let config = require('config');
+//     //let config = require('config');
 
-    let tmnCode = config.vnp_TmnCode;
-    let secretKey = config.vnp_HashSecret;
-    let vnpUrl = config.vnp_Url;
-    let returnUrl = config.vnp_ReturnUrl;
-    let orderId = moment(date).format('DDHHmmss');
-    let amount = req.query.amount;
-    let bankCode = '';
+//     let tmnCode = config.vnp_TmnCode;
+//     let secretKey = config.vnp_HashSecret;
+//     let vnpUrl = config.vnp_Url;
+//     let returnUrl = config.vnp_ReturnUrl;
+//     let orderId = moment(date).format('DDHHmmss');
+//     let amount = req.query.amount;
+//     let bankCode = '';
 
-    // let locale = req.body.language;
-    // if(locale === null || locale === ''){
-    //     locale = 'vn';
-    // }
+//     // let locale = req.body.language;
+//     // if(locale === null || locale === ''){
+//     //     locale = 'vn';
+//     // }
 
-    let locale = 'vn';
-    let currCode = 'VND';
-    let vnp_Params = {};
-    vnp_Params['vnp_Version'] = '2.1.0';
-    vnp_Params['vnp_Command'] = 'pay';
-    vnp_Params['vnp_TmnCode'] = tmnCode;
-    vnp_Params['vnp_Locale'] = locale;
-    vnp_Params['vnp_CurrCode'] = currCode;
-    vnp_Params['vnp_TxnRef'] = orderId;
-    vnp_Params['vnp_OrderInfo'] = 'Thanh toan cho ma GD:' + orderId;
-    vnp_Params['vnp_OrderType'] = 'other';
-    vnp_Params['vnp_Amount'] = amount * 100;
-    vnp_Params['vnp_ReturnUrl'] = returnUrl;
-    vnp_Params['vnp_IpAddr'] = ipAddr;
-    vnp_Params['vnp_CreateDate'] = createDate;
-    if (bankCode !== null && bankCode !== '') {
-        vnp_Params['vnp_BankCode'] = bankCode;
-    }
+//     let locale = 'vn';
+//     let currCode = 'VND';
+//     let vnp_Params = {};
+//     vnp_Params['vnp_Version'] = '2.1.0';
+//     vnp_Params['vnp_Command'] = 'pay';
+//     vnp_Params['vnp_TmnCode'] = tmnCode;
+//     vnp_Params['vnp_Locale'] = locale;
+//     vnp_Params['vnp_CurrCode'] = currCode;
+//     vnp_Params['vnp_TxnRef'] = orderId;
+//     vnp_Params['vnp_OrderInfo'] = 'Thanh toan cho ma GD:' + orderId;
+//     vnp_Params['vnp_OrderType'] = 'other';
+//     vnp_Params['vnp_Amount'] = amount * 100;
+//     vnp_Params['vnp_ReturnUrl'] = returnUrl;
+//     vnp_Params['vnp_IpAddr'] = ipAddr;
+//     vnp_Params['vnp_CreateDate'] = createDate;
+//     if (bankCode !== null && bankCode !== '') {
+//         vnp_Params['vnp_BankCode'] = bankCode;
+//     }
 
-    vnp_Params = sortObject(vnp_Params);
+//     vnp_Params = sortObject(vnp_Params);
 
-    let querystring = require('qs');
-    let signData = querystring.stringify(vnp_Params, { encode: false });
-    let crypto = require("crypto");
-    let hmac = crypto.createHmac("sha512", secretKey);
-    let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
-    vnp_Params['vnp_SecureHash'] = signed;
-    vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
+//     let querystring = require('qs');
+//     let signData = querystring.stringify(vnp_Params, { encode: false });
+//     let crypto = require("crypto");
+//     let hmac = crypto.createHmac("sha512", secretKey);
+//     let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+//     vnp_Params['vnp_SecureHash'] = signed;
+//     vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
 
-    let obj = {
-        data: vnpUrl,
-        signed: vnp_Params.vnp_TxnRef
-    }
-    return res.json(obj);
-});
+//     let obj = {
+//         data: vnpUrl,
+//         signed: vnp_Params.vnp_TxnRef
+//     }
+//     return res.json(obj);
+// });
 
-router.get('/vnpay_return', function (req, res, next) {
-    let vnp_Params = req.query;
+// router.get('/vnpay_return', function (req, res, next) {
+//     let vnp_Params = req.query;
 
-    let secureHash = vnp_Params['vnp_SecureHash'];
+//     let secureHash = vnp_Params['vnp_SecureHash'];
 
-    delete vnp_Params['vnp_SecureHash'];
-    delete vnp_Params['vnp_SecureHashType'];
+//     delete vnp_Params['vnp_SecureHash'];
+//     delete vnp_Params['vnp_SecureHashType'];
 
-    vnp_Params = sortObject(vnp_Params);
+//     vnp_Params = sortObject(vnp_Params);
 
-    let tmnCode = config.vnp_TmnCode
-    let secretKey = config.vnp_HashSecret
+//     let tmnCode = config.vnp_TmnCode
+//     let secretKey = config.vnp_HashSecret
 
-    let querystring = require('qs');
-    let signData = querystring.stringify(vnp_Params, { encode: false });
-    let crypto = require("crypto");
-    let hmac = crypto.createHmac("sha512", secretKey);
-    let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
-    res.redirect(`${constants.urlui}/checkout?signed=${req.query.vnp_TxnRef}&status=${req.query.vnp_ResponseCode}`)
+//     let querystring = require('qs');
+//     let signData = querystring.stringify(vnp_Params, { encode: false });
+//     let crypto = require("crypto");
+//     let hmac = crypto.createHmac("sha512", secretKey);
+//     let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+//     res.redirect(`${constants.urlui}/checkout?signed=${req.query.vnp_TxnRef}&status=${req.query.vnp_ResponseCode}`)
 
-    // if(secureHash === signed){
-    //     //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
-    //     //res.render('success', {code: vnp_Params['vnp_ResponseCode']})
-    //     res.redirect(`http://localhost:3456/checkout?signed=${req.query.vnp_TxnRef}&status=${req.query.vnp_TransactionStatus}`)
-    // } else{
-    //     //res.render('success', {code: '97'})
-    //     res.redirect(`http://localhost:3456/checkout?signed=${req.query.vnp_TxnRef}&status=${req.query.vnp_TransactionStatus}`)
-    // }
-});
+//     // if(secureHash === signed){
+//     //     //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
+//     //     //res.render('success', {code: vnp_Params['vnp_ResponseCode']})
+//     //     res.redirect(`http://localhost:3456/checkout?signed=${req.query.vnp_TxnRef}&status=${req.query.vnp_TransactionStatus}`)
+//     // } else{
+//     //     //res.render('success', {code: '97'})
+//     //     res.redirect(`http://localhost:3456/checkout?signed=${req.query.vnp_TxnRef}&status=${req.query.vnp_TransactionStatus}`)
+//     // }
+// });
 
 // router.get('/vnpay_ipn', function (req, res, next) {
 //     let vnp_Params = req.query;

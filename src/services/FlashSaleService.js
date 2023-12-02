@@ -349,6 +349,119 @@ class FlashSaleService {
             )
         }
     }
+
+    async addLoopSale() {
+        try {
+        const currentDate = new Date();
+        //const inputDate = new Date(req.body.date_sale);   
+       // const inputTime = req.body.point_sale;
+       let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
+        //let toDay = currentDate.toISOString().slice(0, 10);
+        //let inputDay = inputDate.toISOString().slice(0, 10);
+      // Tìm tất cả các Flash Sale có is_loop = true và date_sale = hôm nay
+      console.log("toDay: ", toDay);
+      const loopSales = await FlashSale.find({ is_loop: true, date_sale: toDay });      
+      // Xóa các Flash Sale đã hết hạn
+      //console.log("chua xoa", loopSales);
+      for (const sale of loopSales) {
+        console.log("sale: ", sale);
+        // thêm vào ngày hôm sau       
+        sale.is_loop = false;
+        await sale.save();
+
+        // Tạo ra một bản ghi mới với các trường giống nhau nhưng có thể thay đổi một số trường
+        const newSale = new FlashSale({
+          product: sale.product,
+          current_sale: sale.current_sale,
+          date_sale: format(new Date().setDate(new Date().getDate() + 1),
+          'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' }),
+          point_sale: sale.point_sale,
+          time_sale: sale.time_sale,
+          num_sale: sale.num_sale,
+          sold_sale: sale.sold_sale,
+          is_loop: true,
+        });
+        await newSale.save();
+    }
+    return new ServiceResponse(
+        200,
+        Status.SUCCESS,
+        Messages.UPDATE_FLASHSALE_SUCCESS
+    )
+        } catch (err) {
+            return new ServiceResponse(
+                500,
+                Status.ERROR,
+                Messages.INTERNAL_SERVER
+            )
+        }
+    }
+
+    async checkAndUpdatePrice() {
+        try {
+
+            // Đặt múi giờ cho Việt Nam
+const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
+
+// Lấy thời gian hiện tại ở Việt Nam
+const currentTimeInVietnam = moment().tz(vietnamTimeZone);
+
+// Lấy số giờ hiện tại
+const currentHourInVietnam = currentTimeInVietnam.get('hours');
+      // tìm các flash sale có ngày và khung giờ hiện tại
+      const currentDate = new Date();
+      const yesterday = subDays(currentDate, 1);
+      console.log("yesterday: ", yesterday);
+      let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
+      // lấy giá trị ngày hôm trước
+      let yes = format(yesterday, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
+
+      let current_point_sale = Math.floor(currentHourInVietnam/3);
+      console.log("toDay: ", toDay, yes);
+      // ngày hôm trước
+     
+      const flashSales = await FlashSale.find({ date_sale: toDay, point_sale: current_point_sale });
+      flashSales.forEach(async (flashSale) => {
+        //console.log("flashSale: ", flashSale);
+        if (flashSale.product) {            
+          await Product.findById(flashSale.product).exec().then((product) => {
+            console.log("da vao day")
+            product.containprice = product.price; // chứa giá ban đầu
+            product.price = product.old_price * (100 - flashSale.current_sale)/100; // giá mới trong flashsale
+            product.save();
+          });
+        }
+      });
+
+      // sửa giá của sản phẩm trong khung giờ đã qua
+      const flashSales1 = await FlashSale.find(current_point_sale == 0 ? {date_sale: yes, point_sale: 7}:{ date_sale: toDay, point_sale: current_point_sale - 1 });
+      flashSales1.forEach(async (flashSale) => {
+        if (flashSale.product) {
+          await Product.findById(flashSale.product).exec().then((product) => {
+            console.log("da vao day", product)
+            product.sold +=  flashSale.sold_sale; // update đã bán
+            product.price = product.containprice; // lấy lại giá ban đầu
+            product.save();
+          });
+        }
+      });
+      return new ServiceResponse(
+        200,
+        Status.SUCCESS,
+        Messages.UPDATE_FLASHSALE_SUCCESS
+    )
+        }
+    
+    catch (err) {
+   
+        return new ServiceResponse(
+            500,
+            Status.ERROR,
+            Messages.INTERNAL_SERVER
+        )
+        }
+    }
+
 }
 
 module.exports = new FlashSaleService

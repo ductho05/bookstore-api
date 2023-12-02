@@ -53,6 +53,8 @@ class Messages {
 
     INSERT_DATA_ERROR = "Insert data error"
 
+    NOT_KEY = "Mã kích hoạt không đúng"
+
     DELETE_DATA_SUCCESS = "Delete data successfully"
 
     DELETE_DATA_ERROR = "Delete data error"
@@ -86,6 +88,10 @@ class Messages {
     TIME_IN_PAST = "Cannot set time in the past"
 
     PRODUCT_IS_EXISTING = "Product is already"
+
+    PRODUCT_NOT_FOUND = "Product not found"
+
+    UPDATE_FLASHSALE_SUCCESS = "Update flash sale successfully"
 
 }
 
