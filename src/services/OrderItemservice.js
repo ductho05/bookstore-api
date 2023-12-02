@@ -82,7 +82,6 @@ class OrderItemService {
     async getByOrderStatus(status, status_order, user) {
 
         try {
-
             const orderItemList = await OrderItem.find({ status: status })
                 .populate("order")
                 .populate({
