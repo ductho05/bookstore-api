@@ -39,7 +39,7 @@ class UserNotificationDTO {
             notification = {
                 title: notification.title,
                 description: notification.description,
-                images: notification.images,
+                image: notification.image,
                 url: notification.url
             }
         }

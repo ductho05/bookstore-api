@@ -19,17 +19,20 @@ class UserService {
 
                 if (await bcrypt.compare(password, user.password)) {
                     const token = jwt.sign(
-                        { isManager: user.isManager, email },
+                        { isManager: user.isManager, email, id: user._id },
                         constants.TOKEN_KEY,
                         {
                             expiresIn: constants.ExpiresIn,
                         }
                     )
 
+                    const userDTO = UserDTO.mapUserToUserDTO(user)
+
                     return new ServiceResponse(
                         200,
                         Status.SUCCESS,
                         Messages.LOGIN_SUCCESS,
+                        userDTO,
                         token
                     )
                 } else {
@@ -123,17 +126,20 @@ class UserService {
 
             if (findUser) {
                 const token = jwt.sign(
-                    { user_id: findUser._id, email },
+                    { isManager: findUser.isManager, email, id: findUser._id },
                     constants.TOKEN_KEY,
                     {
                         expiresIn: constants.ExpiresIn,
                     }
                 )
 
+                const userDTO = UserDTO.mapUserToUserDTO(findUser)
+
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,
                     Messages.LOGIN_SUCCESS,
+                    userDTO,
                     token
                 )
             } else {
@@ -144,20 +150,22 @@ class UserService {
                     facebookId: faceId
                 })
 
+                await user.save()
                 const token = jwt.sign(
-                    { user_id: user._id, email },
+                    { isManager: user.isManager, email, id: user._id },
                     constants.TOKEN_KEY,
                     {
                         expiresIn: constants.ExpiresIn,
                     }
                 )
 
-                user.save()
+                const userDTO = UserDTO.mapUserToUserDTO(user)
 
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,
                     Messages.LOGIN_SUCCESS,
+                    userDTO,
                     token
                 )
             }
@@ -188,19 +196,22 @@ class UserService {
                     password: encryptedPassword
                 })
 
+                await user.save()
                 const token = jwt.sign(
-                    { user_id: user._id, email },
+                    { isManager: user.isManager, email, id: user._id },
                     constants.TOKEN_KEY,
                     {
                         expiresIn: constants.ExpiresIn,
                     }
                 )
 
-                user.save()
+                const userDTO = UserDTO.mapUserToUserDTO(user)
+
                 return new ServiceResponse(
                     400,
                     Status.SUCCESS,
                     Messages.REGISTER_SUCCESS,
+                    userDTO,
                     token
                 )
             }
@@ -422,14 +433,17 @@ class UserService {
                 newUser.password = encryptedPassword
             }
 
-            const userUpdate = User.findByIdAndUpdate(filter, newUser).exec()
+            const userUpdate = await User.findByIdAndUpdate(filter, newUser).exec()
 
             if (userUpdate) {
+
+                const userDTO = UserDTO.mapUserToUserDTO(userUpdate)
 
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,
-                    Messages.UPDATE_USER_SUCCESS
+                    Messages.UPDATE_USER_SUCCESS,
+                    userDTO
                 )
             } else {
                 return new ServiceResponse(

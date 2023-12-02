@@ -7,24 +7,15 @@ class OrderController {
 
     async getAllOrderByUser(req, res) {
 
-        const { error, value } = Validator.idValidator.validate(req.body.user)
+        const id = req.id
 
-        if (error) {
+        const response = await OrderService.getByUser(id)
 
-            res.status(400).json(new Response(
-                Status.ERROR,
-                error.message
-            ))
-        } else {
-
-            const response = await OrderService.getByUser(value)
-
-            res.status(response.statusCode).json(new Response(
-                response.status,
-                response.message,
-                response.data
-            ))
-        }
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+            response.data
+        ))
     }
 
     // Lấy tổng số lượng đơn hàng theo cả 5 trạng thái
@@ -45,9 +36,9 @@ class OrderController {
         const page = req.query.page;
         const limit = req.query.limit;
         const status = req.query.status;
-        const user = req.query.user;
+        const id = req.id
 
-        const response = await OrderService.getAllByUser(page, limit, status, user)
+        const response = await OrderService.getAllByUser(page, limit, status, id)
 
         res.status(response.statusCode).json(new Response(
             response.status,
@@ -61,9 +52,9 @@ class OrderController {
 
         const page = req.query.page || 1;
         const limit = req.query.limit || 10;
-        const user = req.query.user
+        const id = req.query.id
 
-        const response = await OrderService.getAllByUserPagination(page, limit, user)
+        const response = await OrderService.getAllByUserPagination(page, limit, id)
 
         res.status(response.statusCode).json(new Response(
             response.status,
@@ -113,9 +104,9 @@ class OrderController {
         var firstTime = req.query.ftime;
         var lastTime = req.query.ltime;
         var sort = req.query.sort;
-        var user = req.query.user;
+        var id = req.query.id;
 
-        const response = await OrderService.getAll(page, limit, name, status, sort, user)
+        const response = await OrderService.getAll(page, limit, name, status, sort, id)
 
         res.status(response.statusCode).json(new Response(
             response.status,

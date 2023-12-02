@@ -18,6 +18,7 @@ const auhthorization = (req, res, next) => {
             } else {
                 if (decoded.isManager) {
                     req.email = decoded.email
+                    req.id = decoded.id
                     next()
                 } else {
                     res.status(403).send(new Response(

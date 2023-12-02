@@ -43,9 +43,9 @@ class OrderItemController {
 
         const status = req.query.status
         const status_order = req.query.status_order
-        const user = req.query.user
+        const id = req.id
 
-        const response = await OrderItemService.getByOrderStatus(status, status_order, user)
+        const response = await OrderItemService.getByOrderStatus(status, status_order, id)
 
         res.status(response.statusCode).json(new Response(
             response.status,

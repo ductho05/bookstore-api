@@ -3,6 +3,7 @@ const Status = require("../utils/Status")
 const Messages = require("../utils/Messages")
 const Order = require("../models/Order")
 const OrderDTO = require("../dtos/OrderDTO")
+const User = require("../models/User")
 
 class OrderService {
 
@@ -67,15 +68,14 @@ class OrderService {
         }
     }
 
-    async getAllByUser(page, limit, status, user) {
+    async getAllByUser(page, limit, status, id) {
 
         try {
 
             var orderList = []
+            if (id) {
 
-            if (user) {
-
-                orderList = await Order.find({ user: user, status: new RegExp(status, "i") })
+                orderList = await Order.find({ user: id, status: new RegExp(status, "i") })
                     .populate("user")
                     .sort({ updatedAt: -1 })
                     .skip((page - 1) * limit)
@@ -104,6 +104,7 @@ class OrderService {
             )
         } catch (err) {
 
+            console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -112,11 +113,11 @@ class OrderService {
         }
     }
 
-    async getAllByUserPagination(page, limit, user) {
+    async getAllByUserPagination(page, limit, id) {
 
         try {
 
-            const orderList = await Order.find({ user: user })
+            const orderList = await Order.find({ user: id })
                 .populate("user")
                 .sort({ updatedAt: -1 })
                 .skip((page - 1) * limit)
@@ -217,14 +218,14 @@ class OrderService {
         }
     }
 
-    async getAll(page, limit, name, status, sort, user) {
+    async getAll(page, limit, name, status, sort, id) {
 
         try {
 
             const orderList = await Order.find(
                 status ? { status: new RegExp(status, "i") } : {}
             )
-                .find(user ? { user: user } : {})
+                .find(id ? { user: id } : {})
                 .sort(sort ? { updatedAt: sort } : {})
                 .limit(limit)
                 .populate("user")

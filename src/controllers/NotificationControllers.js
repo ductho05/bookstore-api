@@ -44,24 +44,15 @@ class NotificationControllers {
 
     async getAllNotificationsByUser(req, res) {
 
-        const { error, value } = Validator.idValidator.validate(req.body.id)
+        const id = req.id
 
-        if (error) {
+        const response = await NotificationService.getAllByUser(id)
 
-            res.status(400).json(new Response(
-                Status.ERROR,
-                error.message
-            ))
-        } else {
-
-            const response = await NotificationService.getAllByUser(value)
-
-            res.status(response.statusCode).json(new Response(
-                response.status,
-                response.message,
-                response.data
-            ))
-        }
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+            response.data
+        ))
     }
 
     async getAllNotifications(req, res) {
