@@ -1,8 +1,8 @@
 
 class OrderDTO {
 
-    constructor(_id, name, address, city, country, districs, wards, phone, quantity, price,
-        message, status, payment_method, shipping_method, deliveryDate, shippingCost, createdAt, user) {
+    constructor(_id, name, address, city, country, districs, wards, phone, quantity, price, 
+        message, status, payment_method, shipping_method, deliveryDate, shippingCost, createdAt,date, user) {
 
         this._id = _id
         this.name = name
@@ -21,6 +21,7 @@ class OrderDTO {
         this.deliveryDate = deliveryDate
         this.shippingCost = shippingCost
         this.createdAt = createdAt
+        this.date = date
         this.user = user
     }
 
@@ -40,9 +41,10 @@ class OrderDTO {
             status,
             payment_method,
             shipping_method,
-            deliveryDate,
+            deliveryDate,        
             shippingCost,
             createdAt,
+            date,
             user
         } = order
 
@@ -57,13 +59,14 @@ class OrderDTO {
 
         if (Object.keys(user).length > 0) {
             user = {
+                id: user._id,
                 images: user.images,
                 fullName: user.fullName
             }
         }
 
         return new OrderDTO(_id, name, address, city, country, districs, wards, phone, quantity, price,
-            message, status, payment_method, shipping_method, deliveryDate, shippingCost, createdAt, user)
+            message, status, payment_method, shipping_method, deliveryDate, shippingCost, createdAt,date, user)
     }
 
 }

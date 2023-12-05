@@ -68,7 +68,9 @@ class SystemService {
            // const order = new Order({ ...data })
             const system = new System({ ...data });
 
-        //    console.log(system)
+
+
+           console.log('system, ', system)
 
             if (system.type == "week" ) {
                 // giá trị ngày thứ 2 tuần
@@ -129,7 +131,7 @@ class SystemService {
             }
             else {
                 return new ServiceResponse(
-                    400,
+                    200,
                     Status.ERROR400,
                     Messages.NOT_KEY
                 )

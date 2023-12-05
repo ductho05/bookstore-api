@@ -35,24 +35,25 @@ class SystemControllers {
 
   // Thêm mới 1 đơn hàng
   async insertSystem(req, res) {
-    const { error, value } = Validator.systemValidator.validate(req.body)
+    // const { error, value } = Validator.systemValidator.validate(req.body)
 
-    if (error) {
+    // if (error) {
 
-        res.status(400).json(new Response(
-            Status.ERROR,
-            error.message
-        ))
-    } else {
+    //     res.status(400).json(new Response(
+    //         Status.ERROR,
+    //         error.message
+    //     ))
+    // } else {
 
-        const response = await SystemService.insertSystem(value)
+        const response = await SystemService.insertSystem(req.body)
 
+        console.log("response", response)
         res.status(response.statusCode).json(new Response(
             response.status,
             response.message,        
         ))
     }
-  }
+//   }
 }
 
 module.exports = new SystemControllers();

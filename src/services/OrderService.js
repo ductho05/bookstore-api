@@ -302,9 +302,13 @@ class OrderService {
     async insert(data) {
 
         try {
-
+            const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
+            // Lấy thời gian hiện tại ở Việt Nam
+            const currentTimeInVietnam = moment().tz(vietnamTimeZone);
+            const date =  currentTimeInVietnam.format('YYYY-MM-DD HH:mm:ss');
             const order = new Order({ ...data })
-            await order.save()
+            order.date = date;
+            await order.save();
 
             return new ServiceResponse(
                 200,
