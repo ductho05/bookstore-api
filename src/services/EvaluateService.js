@@ -42,26 +42,23 @@ class EvaluateService {
         }
     }
 
-    async like(email, evaluateId) {
+    async like(uid, evaluateId) {
 
         try {
-
-            const user = await User.findOne({ email }).exec()
-            const userId = user._id
 
             const evaluate = await Evaluate.findOne({ _id: evaluateId }).exec()
             if (evaluate) {
 
                 const likes = evaluate.likes
-                const foundLike = likes.find(l => l.equals(userId))
+                const foundLike = likes.find(l => l.equals(uid))
 
                 if (foundLike) {
 
-                    const newLikes = likes.filter(l => !l.equals(userId))
+                    const newLikes = likes.filter(l => !l.equals(uid))
                     evaluate.likes = [...newLikes]
                 } else {
 
-                    likes.push(userId)
+                    likes.push(uid)
                     evaluate.likes = [...likes]
                 }
                 await evaluate.save()
@@ -69,7 +66,8 @@ class EvaluateService {
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,
-                    Messages.LIKE_OR_QUIT_LIKE_SUCCESS
+                    Messages.LIKE_OR_QUIT_LIKE_SUCCESS,
+                    evaluate
                 )
             } else {
 
@@ -296,7 +294,8 @@ class EvaluateService {
                     return new ServiceResponse(
                         200,
                         Status.SUCCESS,
-                        Messages.INSERT_EVALUATE_SUCCESS
+                        Messages.INSERT_EVALUATE_SUCCESS,
+                        product
                     )
                 } else {
                     return new ServiceResponse(

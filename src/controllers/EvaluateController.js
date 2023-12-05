@@ -18,7 +18,7 @@ class EvaluateController {
 
     async likeComment(req, res) {
 
-        const email = req.email
+        const uid = req.id
         const { error, value } = Validator.idValidator.validate(req.query.id)
 
         if (error) {
@@ -29,7 +29,7 @@ class EvaluateController {
             ))
         } else {
 
-            const response = await EvaluateService.like(email, value)
+            const response = await EvaluateService.like(uid, value)
 
             res.status(response.statusCode).json(new Response(
                 response.status,

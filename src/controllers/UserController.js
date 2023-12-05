@@ -7,7 +7,7 @@ class UserController {
 
     async verifyOTP(req, res) {
 
-        const { error, value } = Validator.emailValidator.validate(req.body)
+        const { error, value } = Validator.emailValidator.validate(req.body.email)
         if (error) {
             res.status(400).json(new Response(
                 Status.ERROR,

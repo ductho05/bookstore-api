@@ -23,7 +23,8 @@ const server = http.createServer(app)
 
 const io = require('socket.io')(server, {
     cors: {
-        origin: 'https://bookstore-ta.vercel.app'
+        origin: 'http://localhost:3456',
+        methods: ["GET", "POST"]
     }
 })
 
