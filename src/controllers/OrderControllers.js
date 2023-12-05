@@ -208,6 +208,27 @@ class OrderController {
             ))
         }
     }
+
+    async createPaymentUrl(req, res) {       
+        
+        const response = await OrderService.createPaymentUrl(req)
+
+            res.status(response.statusCode).json(new Response(
+                response.status,
+                response.message,
+                response.data
+            ))
+        // return res.json(obj);
+    }
+
+    async vnpayReturn(req, res) {
+        const response = await OrderService.vnpayReturn(req, res)
+
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+        ))
+    }
 }
 
 module.exports = new OrderController();

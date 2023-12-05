@@ -164,6 +164,16 @@ class Validator {
         categoryId: Joi.string().trim().min(1)
 
     })
+
+    systemValidator = Joi.object({
+        //start: Joi.string().pattern(new RegExp(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)).required(),
+        //end: Joi.string().pattern(new RegExp(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)).required(),
+        type: Joi.string().valid("week", "month", "year").required(),
+        isRun: Joi.boolean().required(),
+        kpi: Joi.number().min(1).required(),
+        key: Joi.string().required()
+        //isStatus: Joi.boolean().required()
+    })
 }
 
 module.exports = new Validator

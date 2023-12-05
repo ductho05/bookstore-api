@@ -8,7 +8,7 @@ class FlashUserService {
     async getById(id) {
 
         try {
-
+            
             const data = await FlashUser.findById(id)
                 .populate({
                     path: 'Flash',

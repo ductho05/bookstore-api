@@ -129,6 +129,28 @@ class FlashSaleControllers {
         ))
     }
 
+    async addLoopSale(req, res) {
+            
+            const response = await FlashSaleService.addLoopSale()
+    
+            res.status(response.statusCode).json(new Response(
+                response.status,
+                response.message,
+            ))
+        }
+
+    async checkAndUpdatePrice(req, res) {
+            
+            const response = await FlashSaleService.checkAndUpdatePrice()
+    
+            res.status(response.statusCode).json(new Response(
+                response.status,
+                response.message,
+            ))
+        }
+
+        
+
 }
 
 
