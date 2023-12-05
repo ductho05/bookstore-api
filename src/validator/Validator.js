@@ -97,6 +97,7 @@ class Validator {
         shipping_method: Joi.string().trim().min(1).required(),
         deliveryDate: Joi.string().trim().min(1).required(),
         shippingCost: Joi.number().min(1).required(),
+        message: Joi.string().allow(null, '').optional(),
         user: Joi.string().pattern(new RegExp(/^[a-fA-F0-9]{24}$/)).required(),
         phone: Joi.string().pattern(
             new RegExp(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/)
@@ -152,6 +153,7 @@ class Validator {
 
     productUpdateValidator = Joi.object({
 
+        rate: Joi.number().min(1).max(5).required(),
         title: Joi.string().trim().min(3).max(255),
         author: Joi.string().trim().min(3).max(255),
         published_date: Joi.string().pattern(new RegExp(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)),

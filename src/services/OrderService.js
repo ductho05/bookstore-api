@@ -313,7 +313,8 @@ class OrderService {
             return new ServiceResponse(
                 200,
                 Status.SUCCESS,
-                Messages.INSERT_DATA_SUCCESS
+                Messages.INSERT_DATA_SUCCESS,
+                order
             )
 
         } catch (err) {
