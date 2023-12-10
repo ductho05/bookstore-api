@@ -7,7 +7,9 @@ class CategoryControllers {
 
     async getAllCategory(req, res) {
 
-        const response = await CategoryService.getAll()
+        const { filter } = req.query;
+
+        const response = await CategoryService.getAll(filter)
 
         res.status(response.statusCode).json(new Response(
             response.status,

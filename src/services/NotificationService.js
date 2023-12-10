@@ -102,6 +102,7 @@ class NotificationService {
 
         } catch (err) {
 
+            console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -149,25 +150,40 @@ class NotificationService {
 
         try {
 
-            const list = await UserNotification.find()
-                .populate("user")
-                .populate("notification")
+            const list = await Notification.find()
                 .sort({ createdAt: -1 })
                 .exec()
-
-            const listDTO = []
-
-            list.forEach(item => {
-                const itemDTO = UserNotificationDTO.mapToUserNotificationDTO(item)
-
-                listDTO.push(itemDTO)
-            })
 
             return new ServiceResponse(
                 200,
                 Status.SUCCESS,
                 Messages.GET_DATA_SUCCESS,
-                listDTO
+                list
+            )
+
+        } catch (err) {
+
+            console.log(err)
+            return new ServiceResponse(
+                500,
+                Status.ERROR,
+                Messages.INTERNAL_SERVER
+            )
+        }
+    }
+
+    async update(id) {
+
+        try {
+
+            const userNotification = await UserNotification.findOne({ _id: id }).exec()
+            userNotification.isAccess = true
+
+            userNotification.save()
+            return new ServiceResponse(
+                200,
+                Status.SUCCESS,
+                Messages.UPDATE_DATA_SUCCESS
             )
 
         } catch (err) {

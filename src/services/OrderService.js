@@ -17,14 +17,23 @@ let config =
 }
 class OrderService {
 
-    async getByUser(id) {
+    async getByUser(id, limit) {
 
         try {
 
-            const listOrder = await Order.find({ user: id })
-                .sort({ updatedAt: -1 })
-                .limit(10)
-                .exec()
+            let listOrder
+            if (limit) {
+                listOrder = await Order.find({ user: id })
+                    .sort({ createdAt: -1 })
+                    .limit(limit)
+                    .exec()
+            } else {
+
+                listOrder = await Order.find({ user: id })
+                    .sort({ createdAt: -1 })
+                    .limit(limit)
+                    .exec()
+            }
 
             return new ServiceResponse(
                 200,
@@ -78,21 +87,21 @@ class OrderService {
         }
     }
 
-    async getAllByUser(page, limit, status, id) {
+    async getAllByUser(page, limit, status, id, user) {
 
         try {
 
             var orderList = []
-            if (id) {
+            if (user) {
 
-                orderList = await Order.find({ user: id, status: new RegExp(status, "i") })
+                orderList = await Order.find({ user, status: new RegExp(status, "i") })
                     .populate("user")
                     .sort({ updatedAt: -1 })
                     .skip((page - 1) * limit)
                     .limit(limit);
             } else {
 
-                orderList = await Order.find({ status: new RegExp(status, "i") })
+                orderList = await Order.find({ user: id, status: new RegExp(status, "i") })
                     .populate("user")
                     .sort({ updatedAt: -1 })
                     .skip((page - 1) * limit)
@@ -305,7 +314,7 @@ class OrderService {
             const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
             // Lấy thời gian hiện tại ở Việt Nam
             const currentTimeInVietnam = moment().tz(vietnamTimeZone);
-            const date =  currentTimeInVietnam.format('YYYY-MM-DD HH:mm:ss');
+            const date = currentTimeInVietnam.format('YYYY-MM-DD HH:mm:ss');
             const order = new Order({ ...data })
             order.date = date;
             await order.save();
@@ -338,7 +347,8 @@ class OrderService {
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,
-                    Messages.UPDATE_DATA_SUCCESS
+                    Messages.UPDATE_DATA_SUCCESS,
+                    order
                 )
             } else {
 
@@ -470,15 +480,15 @@ class OrderService {
             let vnp_Params = req.query;
 
             let secureHash = vnp_Params['vnp_SecureHash'];
-        
+
             delete vnp_Params['vnp_SecureHash'];
             delete vnp_Params['vnp_SecureHashType'];
-        
+
             vnp_Params = sortObject(vnp_Params);
-        
+
             let tmnCode = config.vnp_TmnCode
             let secretKey = config.vnp_HashSecret
-        
+
             let querystring = require('qs');
             let signData = querystring.stringify(vnp_Params, { encode: false });
             let crypto = require("crypto");

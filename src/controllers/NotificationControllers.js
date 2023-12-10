@@ -64,6 +64,19 @@ class NotificationControllers {
             response.data
         ))
     }
+
+    async updateUserNotification(req, res) {
+
+        const id = req.body.id
+
+        const response = await NotificationService.update(id)
+
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+            response.data
+        ))
+    }
 }
 
 module.exports = new NotificationControllers()

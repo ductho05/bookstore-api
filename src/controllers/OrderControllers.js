@@ -8,8 +8,9 @@ class OrderController {
     async getAllOrderByUser(req, res) {
 
         const id = req.id
+        const limit = req.query.limit
 
-        const response = await OrderService.getByUser(id)
+        const response = await OrderService.getByUser(id, limit)
 
         res.status(response.statusCode).json(new Response(
             response.status,
@@ -36,9 +37,10 @@ class OrderController {
         const page = req.query.page;
         const limit = req.query.limit;
         const status = req.query.status;
+        const user = req.query.user
         const id = req.id
 
-        const response = await OrderService.getAllByUser(page, limit, status, id)
+        const response = await OrderService.getAllByUser(page, limit, status, id, user)
 
         res.status(response.statusCode).json(new Response(
             response.status,
@@ -209,15 +211,15 @@ class OrderController {
         }
     }
 
-    async createPaymentUrl(req, res) {       
-        
+    async createPaymentUrl(req, res) {
+
         const response = await OrderService.createPaymentUrl(req)
 
-            res.status(response.statusCode).json(new Response(
-                response.status,
-                response.message,
-                response.data
-            ))
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+            response.data
+        ))
         // return res.json(obj);
     }
 
