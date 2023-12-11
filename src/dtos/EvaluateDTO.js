@@ -41,6 +41,7 @@ class EvaluateDTO {
 
         if (Object.keys(product).length > 0) {
             product = {
+                _id: product._id,
                 images: product.images,
                 title: product.title
             }

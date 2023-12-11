@@ -1,3 +1,4 @@
+const ProductDTO = require("../dtos/ProductDTO");
 const Response = require("../response/Response");
 const ProductService = require("../services/ProductService");
 const Status = require("../utils/Status");
@@ -260,7 +261,8 @@ class ProductControllers {
 
             res.status(response.statusCode).json(new Response(
                 response.status,
-                response.message
+                response.message,
+                response.data
             ))
         }
     }
@@ -284,6 +286,29 @@ class ProductControllers {
         } else {
 
             const response = await ProductService.update({ _id: id }, value)
+
+            res.status(response.statusCode).json(new Response(
+                response.status,
+                response.message
+            ))
+        }
+    }
+
+    async updateSoldProduct(req, res) {
+
+        const id = req.params.id
+        const { error, value } = Validator.soldValidator.validate(req.body)
+
+        if (error) {
+
+            res.status(400).json(new Response(
+                Status.ERROR,
+                error.message
+            ))
+        } else {
+
+            const sold = value.sold
+            const response = await ProductService.updateSold({ _id: id }, sold)
 
             res.status(response.statusCode).json(new Response(
                 response.status,

@@ -8,5 +8,6 @@ router.post("/subscription", authentication, NotificationControllers.handlePushN
 router.post("/send", authentication, NotificationControllers.sendPushNotification)
 router.post("/get", authentication, NotificationControllers.getAllNotificationsByUser)
 router.get("/get-all", auhthorization, NotificationControllers.getAllNotifications)
+router.put("/", authentication, NotificationControllers.updateUserNotification)
 
 module.exports = router

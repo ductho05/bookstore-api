@@ -189,11 +189,13 @@ class ProductService {
 
             if (data) {
 
+                const productDTO = ProductDTO.mapToProductDTO(data)
+
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,
                     Messages.GET_DATA_SUCCESS,
-                    data
+                    productDTO
                 )
             } else {
 
@@ -548,7 +550,8 @@ class ProductService {
                     return new ServiceResponse(
                         200,
                         Status.SUCCESS,
-                        Messages.INSERT_DATA_SUCCESS
+                        Messages.INSERT_DATA_SUCCESS,
+                        product
                     )
                 } else {
 
@@ -580,6 +583,43 @@ class ProductService {
 
             if (result) {
 
+                return new ServiceResponse(
+                    200,
+                    Status.SUCCESS,
+                    Messages.UPDATE_DATA_SUCCESS
+                )
+            } else {
+
+                return new ServiceResponse(
+                    400,
+                    Status.ERROR,
+                    Messages.UPDATE_DATA_ERROR
+                )
+            }
+
+        } catch (err) {
+
+            console.log(err)
+            return new ServiceResponse(
+                500,
+                Status.ERROR,
+                Messages.INTERNAL_SERVER
+            )
+        }
+    }
+
+    async updateSold(filter, sold) {
+
+        try {
+
+            const result = await Product.findOne(filter).exec()
+
+            if (result) {
+
+                const newSold = sold + result.sold
+                result.sold = newSold
+
+                result.save()
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,

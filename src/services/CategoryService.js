@@ -5,10 +5,10 @@ const Messages = require("../utils/Messages")
 
 class CategoryService {
 
-    async getAll() {
+    async getAll(filter) {
         try {
 
-            const data = await Category.aggregate([
+            const data = filter != "simple" ? await Category.aggregate([
                 {
                     $addFields: {
                         field: {
@@ -33,7 +33,7 @@ class CategoryService {
                         categories: { $push: '$$ROOT' }
                     }
                 }
-            ])
+            ]) : await Category.find().limit(50).exec();
 
             return new ServiceResponse(
                 200,

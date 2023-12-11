@@ -7,7 +7,7 @@ class NotificationControllers {
 
     async handlePushNotificationSubcription(req, res) {
 
-        const subscription = req.body;
+        const subscription = req.body.subscription
         const email = req.email
 
         const response = await NotificationService.pushSubscription(subscription, email)
@@ -57,6 +57,19 @@ class NotificationControllers {
 
     async getAllNotifications(req, res) {
         const response = await NotificationService.getAll()
+
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+            response.data
+        ))
+    }
+
+    async updateUserNotification(req, res) {
+
+        const id = req.body.id
+
+        const response = await NotificationService.update(id)
 
         res.status(response.statusCode).json(new Response(
             response.status,

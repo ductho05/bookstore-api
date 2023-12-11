@@ -6,6 +6,7 @@ const db = require("./config/db/DbConnection")
 require('dotenv').config()
 const http = require('http')
 const socket = require('./io')
+const { urlui } = require('./utils/api')
 
 // Kết nối database
 // //var indexRouter = require("./routers/index");
@@ -23,8 +24,8 @@ const server = http.createServer(app)
 
 const io = require('socket.io')(server, {
     cors: {
-        origin: 'http://localhost:3456',
-        methods: ["GET", "POST"]
+        origin: urlui,
+        methods: ["GET", "POST", "PUT", "DELETE"]
     }
 })
 

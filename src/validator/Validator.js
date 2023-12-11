@@ -30,13 +30,12 @@ class Validator {
         phoneNumber: Joi.string().pattern(
             new RegExp(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/)
         ).required(),
-        birth: Joi.string().pattern(
-            new RegExp(/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$/)
-        ).required(),
+        birth: Joi.string().pattern(new RegExp(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)).required(),
         email: Joi.string().email().max(225).required(),
         password: Joi.string().pattern(
             new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
-        ).required()
+        ).required(),
+        isManager: Joi.boolean().required(),
     })
 
     userUpdateValidator = Joi.object({
@@ -48,12 +47,13 @@ class Validator {
             new RegExp(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/)
         ),
         birth: Joi.string().pattern(
-            new RegExp(/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$/)
+            new RegExp(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)
         ),
         email: Joi.string().email().max(225),
         password: Joi.string().pattern(
             new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
-        )
+        ),
+        isManager: Joi.boolean(),
     })
 
     categoryValidator = Joi.object({
@@ -153,7 +153,10 @@ class Validator {
 
     productUpdateValidator = Joi.object({
 
-        rate: Joi.number().min(1).max(5).required(),
+        _id: Joi.string(),
+        status: Joi.string(),
+        sold: Joi.number().min(0),
+        rate: Joi.number().min(0).max(5),
         title: Joi.string().trim().min(3).max(255),
         author: Joi.string().trim().min(3).max(255),
         published_date: Joi.string().pattern(new RegExp(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)),
@@ -161,8 +164,11 @@ class Validator {
         old_price: Joi.number().min(1000),
         desciption: Joi.string().trim().min(5),
         quantity: Joi.number().min(1),
-        categoryId: Joi.string().trim().min(1)
-
+        categoryId: Joi.string().trim().min(1),
+        list_Images: Joi.string().trim().min(1),
+        images: Joi.string().pattern(new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/)),
+        containprice: Joi.number().min(1000),
+        flashsaleprice: Joi.number().min(0)
     })
 
     systemValidator = Joi.object({
@@ -173,6 +179,10 @@ class Validator {
         kpi: Joi.number().min(1).required(),
         key: Joi.string().required()
         //isStatus: Joi.boolean().required()
+    })
+
+    soldValidator = Joi.object({
+        sold: Joi.number().min(1).max(1000).required()
     })
 }
 
