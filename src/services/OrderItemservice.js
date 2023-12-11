@@ -19,8 +19,8 @@ class OrderItemService {
 
             orderItemList.forEach(orderItem => {
 
-                const orderItemDTO = OrderItemDTO.mapToOrderItemDTO(orderItem)
-                orderItemDTOList.push(orderItemDTO)
+                //const orderItemDTO = OrderItemDTO.mapToOrderItemDTO(orderItem)
+                orderItemDTOList.push(orderItem)
             })
 
             return new ServiceResponse(
