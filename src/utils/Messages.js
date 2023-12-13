@@ -45,7 +45,7 @@ class Messages {
 
     NOT_FOUND_DATA = "Not found data"
 
-    UPDATE_DATA_SUCCESS = "Update data successfully"
+    UPDATE_DATA_SUCCESS = "Update product quantity successfully"
 
     UPDATE_DATA_ERROR = "Update data error"
 
@@ -85,7 +85,7 @@ class Messages {
 
     GET_FLASHSALE_SUCCESS = "Get flash sale successfully"
 
-    TIME_IN_PAST = "Cannot set time in the past"
+    TIME_IN_PAST = "Không thể thiết đặt cho khung giờ quá khứ."
 
     PRODUCT_IS_EXISTING = "Product is already"
 

@@ -2,7 +2,10 @@ const ServiceResponse = require("../response/ServiceResponse")
 const Status = require("../utils/Status")
 const Messages = require("../utils/Messages")
 const FlashSale = require("../models/FlashSale")
-
+const Product = require("../models/Product")
+const { format } = require('date-fns-tz');
+const subDays = require('date-fns/subDays');
+const moment = require('moment');
 class FlashSaleService {
 
     async getById(id) {
@@ -40,15 +43,14 @@ class FlashSaleService {
 
         try {
 
-            const currentDate = new Date();
-            // Chuyển múi giờ sang UTC+7 (Giờ Đông Dương)
-            const utcOffset = 7 * 60; // 7 giờ * 60 phút/giờ
-            currentDate.setMinutes(currentDate.getMinutes() + utcOffset);
+            const currentDate = new Date();          
 
 
             let current_point_sale = Math.floor(new Date().getHours() / 3);
-            let toDay = currentDate.toISOString().slice(0, 10);
+            let toDay =  format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
 
+            console.log("toDay: ", toDay, current_point_sale);
+            // Lấy danh sách flash sale
             const flashSales = await FlashSale
 
                 // tìm theo  id
@@ -186,29 +188,52 @@ class FlashSaleService {
         }
     }
 
-    async addProduct(currentHour, inputTime, toDay, inputDay, body) {
+    async addProduct(currentHourInVietnam, currentHour, inputTime, toDay, inputDay, body) {
 
         try {
 
             if (inputDay < toDay || (inputDay == toDay && (inputTime + 1) * 3 <= currentHour)) {
 
                 return new ServiceResponse(
-                    400,
-                    Status.ERROR,
+                    200,
+                    Status.ERROR1,
                     Messages.TIME_IN_PAST
                 )
             }
 
+            // const existingRecord = await FlashSale.findOne({
+            //     date_sale: body.date_sale,
+            //     point_sale: body.point_sale,
+            //     product: body.product,
+            //     current_sale: body.current_sale,
+            // });
+
+            // Tìm kiếm bản ghi trong cơ sở dữ liệu có các trường quan trọng giống với dữ liệu đầu vào
             const existingRecord = await FlashSale.findOne({
                 date_sale: body.date_sale,
                 point_sale: body.point_sale,
                 product: body.product,
-                current_sale: body.current_sale,
+                //current_sale: req.body.current_sale,
+                //Thêm bất kỳ trường quan trọng nào khác bạn muốn kiểm tra ở đây.
             });
 
             if (existingRecord) {
-
+                // Tiến hành update lại giá của Product khi thêm FlashSale
+                // Trong khung giờ hiện tại cần update lại giá của sản phẩm           
+                if (body.date_sale == toDay && body.point_sale == Math.floor(currentHourInVietnam/3)) {
+                    await Product.findById(body.product).exec().then((product) => {
+                        // product.containprice = product.price;//containprice đã được lưu trước đó
+                        product.price = product.old_price * (100 - body.current_sale)/100;                    
+                        product.save();
+                    });
+                }
+                
+                // Nếu tìm thấy bản ghi trùng, cộng thêm số lượng
                 existingRecord.num_sale += body.num_sale
+                // lấy mức giảm sau
+                existingRecord.current_sale = body.current_sale;
+
+                // Lưu lại bản ghi
                 await existingRecord.save()
 
                 return new ServiceResponse(
@@ -219,35 +244,89 @@ class FlashSaleService {
                 )
 
             } else {
+            // trường hợp flashsale chưa tồn tại
+            // Tiến hành update lại giá của Product khi thêm FlashSale
+            // Trong khung giờ hiện tại            
+            if (body.date_sale == toDay && body.point_sale == Math.floor(currentHourInVietnam/3)) {
+                await Product.findById(body.product).exec().then((product) => {
+                    product.containprice = product.price;
+                    product.price = product.old_price * (100 - body.current_sale)/100;                    
+                    product.save();
+                });
+            }
+            // // Trong khung giờ tương lai
+            // else {
+            //     await Product.findById(body.product).exec().then((product) => {
+            //         // lưu giá ban đầu
+            //         product.containprice = product.price;
+            //         //product.price = product.old_price * (100 - req.body.current_sale)/100;
+            //         product.save();
+            //     });
+            // }
+            // Thêm bản ghi mới FlashSale
+            const data = await FlashSale.create(body);
+                    
+            // thêm trường hide_price để ẩn giá khi hết flashsale
+            // lấy giá sản phẩm vừa thêm
+            await Product.findById(body.product).exec().then((product) => {
+            // Giả sử product.old_price và req.body.current_sale là các giá trị hợp lý
+            const price = product.old_price * (100 - body.current_sale) / 100;
+            // Chuyển đổi giá thành chuỗi
+            const priceString = price.toString();
+            const a = priceString.length - 1;
+            // Tạo chuỗi giá ẩn
+            let hiddenPriceString = '';
+            for (let i = 0; i < priceString.length; i++) {
+                // Nếu chữ số hiện tại là chữ số đầu tiên hoặc cuối cùng
+                if (i === 0 || i === a || i === a-1 || i === a-2) {
+                // Thêm chữ số vào chuỗi giá ẩn
+                hiddenPriceString += priceString[i];
+                } else {
+                // Thay thế chữ số bằng dấu *
+                hiddenPriceString += 'X';
+                }
+            }
 
-                const data = await FlashSale.create(body);
-                if (data) {
+            let stringNum = hiddenPriceString.split('').reverse().join('');
+            // duyệt tất cả các chữ số trong giá
+            let formattedNumberString = '';
+            for (let i = 0; i < stringNum.length; i++) {
+                // thêm , vào sau mỗi 3 chữ số
+                if (i % 3 === 0 && i !== 0) {
+                formattedNumberString += ',';
+                }
+                // thêm chữ số vào chuỗi
+                formattedNumberString += stringNum[i];
+            }
+            // Đảo ngược chuỗi để có giá ẩn
+            const formattedNumberString2 = formattedNumberString.split('').reverse().join('');
+            // Gán giá che dấu vào thuộc tính hide_price trong đối tượng data
+            data.hide_price = formattedNumberString2;
+                data.save();
+            });
 
-                    return new ServiceResponse(
+
+            if (data) {
+                return new ServiceResponse (
                         200,
                         Status.SUCCESS,
                         Messages.INSERT_DATA_SUCCESS,
                         data
-                    )
-
-                } else {
-
-                    return new ServiceResponse(
-                        400,
-                        Status.ERROR,
-                        Messages.INSERT_DATA_ERROR
-                    )
-                }
+                )
+            } else {
+                return new ServiceResponse(
+                    400,
+                    Status.ERROR,
+                    Messages.INSERT_DATA_ERROR
+                )
             }
-
-        } catch (err) {
-
-            return new ServiceResponse(
-                500,
-                Status.ERROR,
-                Messages.INTERNAL_SERVER
-            )
         }
+    } catch (err) {
+        return new ServiceResponse(
+            500,
+            Status.ERROR,
+            Messages.INTERNAL_SERVER
+        )}
     }
 
     async update(id, updateProduct) {
@@ -292,7 +371,7 @@ class FlashSaleService {
             const currentHour = currentDate.getHours();
             // const inputTime = req.body.point_sale;
 
-            let toDay = currentDate.toISOString().slice(0, 10);
+            let toDay =  format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
             //let inputDay = inputDate.toISOString().slice(0, 10);
             // Tìm tất cả các Flash Sale đã hết hạn
             const expiredSales = await FlashSale.find({ date_sale: { $lte: toDay } });
@@ -359,11 +438,12 @@ class FlashSaleService {
         //let toDay = currentDate.toISOString().slice(0, 10);
         //let inputDay = inputDate.toISOString().slice(0, 10);
       // Tìm tất cả các Flash Sale có is_loop = true và date_sale = hôm nay
-      console.log("toDay: ", toDay);
-      const loopSales = await FlashSale.find({ is_loop: true, date_sale: toDay });      
-      // Xóa các Flash Sale đã hết hạn
-      //console.log("chua xoa", loopSales);
-      for (const sale of loopSales) {
+        console.log("toDay: ", toDay);
+        const loopSales = await FlashSale.find({ is_loop: true, date_sale: toDay });      
+        console.log("loopSales: ", loopSales);
+        // Xóa các Flash Sale đã hết hạn
+        //console.log("chua xoa", loopSales);
+        for (const sale of loopSales) {
         console.log("sale: ", sale);
         // thêm vào ngày hôm sau       
         sale.is_loop = false;
@@ -382,12 +462,12 @@ class FlashSaleService {
           is_loop: true,
         });
         await newSale.save();
-    }
-    return new ServiceResponse(
-        200,
-        Status.SUCCESS,
-        Messages.UPDATE_FLASHSALE_SUCCESS
-    )
+        }
+        return new ServiceResponse(
+            200,
+            Status.SUCCESS,
+            Messages.UPDATE_FLASHSALE_SUCCESS
+        )
         } catch (err) {
             return new ServiceResponse(
                 500,
@@ -398,68 +478,66 @@ class FlashSaleService {
     }
 
     async checkAndUpdatePrice() {
+        console.log("da vao day")
         try {
-
             // Đặt múi giờ cho Việt Nam
-const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
-
-// Lấy thời gian hiện tại ở Việt Nam
-const currentTimeInVietnam = moment().tz(vietnamTimeZone);
-
-// Lấy số giờ hiện tại
-const currentHourInVietnam = currentTimeInVietnam.get('hours');
-      // tìm các flash sale có ngày và khung giờ hiện tại
-      const currentDate = new Date();
-      const yesterday = subDays(currentDate, 1);
-      console.log("yesterday: ", yesterday);
-      let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
-      // lấy giá trị ngày hôm trước
-      let yes = format(yesterday, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
-
-      let current_point_sale = Math.floor(currentHourInVietnam/3);
-      console.log("toDay: ", toDay, yes);
-      // ngày hôm trước
-     
-      const flashSales = await FlashSale.find({ date_sale: toDay, point_sale: current_point_sale });
-      flashSales.forEach(async (flashSale) => {
-        //console.log("flashSale: ", flashSale);
-        if (flashSale.product) {            
-          await Product.findById(flashSale.product).exec().then((product) => {
+            const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
             console.log("da vao day")
-            product.containprice = product.price; // chứa giá ban đầu
-            product.price = product.old_price * (100 - flashSale.current_sale)/100; // giá mới trong flashsale
-            product.save();
-          });
-        }
-      });
+            // Lấy thời gian hiện tại ở Việt Nam
+            const currentTimeInVietnam = moment().tz(vietnamTimeZone);
+            // Lấy số giờ hiện tại
+            const currentHourInVietnam = currentTimeInVietnam.get('hours');
+           
+            // tìm các flash sale có ngày và khung giờ hiện tại
+            const currentDate = new Date();
+            console.log("da vao day")
+            const yesterday = subDays(currentDate, 1);
+            console.log("yesterday: ", yesterday);
+            let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
+            // lấy giá trị ngày hôm trước
+            let yes = format(yesterday, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
 
-      // sửa giá của sản phẩm trong khung giờ đã qua
-      const flashSales1 = await FlashSale.find(current_point_sale == 0 ? {date_sale: yes, point_sale: 7}:{ date_sale: toDay, point_sale: current_point_sale - 1 });
-      flashSales1.forEach(async (flashSale) => {
-        if (flashSale.product) {
-          await Product.findById(flashSale.product).exec().then((product) => {
-            console.log("da vao day", product)
-            product.sold +=  flashSale.sold_sale; // update đã bán
-            product.price = product.containprice; // lấy lại giá ban đầu
-            product.save();
-          });
-        }
-      });
-      return new ServiceResponse(
-        200,
-        Status.SUCCESS,
-        Messages.UPDATE_FLASHSALE_SUCCESS
-    )
-        }
-    
+            let current_point_sale = Math.floor(currentHourInVietnam/3);
+            console.log("toDay: ", toDay, yes);
+            // ngày hôm trước
+            
+
+            // sửa giá của sản phẩm trong khung giờ đã qua
+            const flashSales1 = await FlashSale.find(current_point_sale == 0 ? {date_sale: yes, point_sale: 7}:{ date_sale: toDay, point_sale: current_point_sale - 1 });
+            flashSales1.forEach(async (flashSale) => {
+                if (flashSale.product) {
+                await Product.findById(flashSale.product).exec().then((product) => {
+                    console.log("da vao day", product)
+                    //product.sold +=  flashSale.sold_sale; // update đã bán
+                    product.price = product.containprice; // lấy lại giá ban đầu
+                    product.save();
+                });
+                }
+            });
+
+            // Update lại giá của sản phẩm trong khung giờ hiện tại
+            const flashSales = await FlashSale.find({ date_sale: toDay, point_sale: current_point_sale });
+            flashSales.forEach(async (flashSale) => {
+            //console.log("flashSale: ", flashSale);
+            if (flashSale.product) {            
+                await Product.findById(flashSale.product).exec().then((product) => {
+                console.log("da vao day")
+                product.containprice = product.price; // chứa giá ban đầu
+                product.price = product.old_price * (100 - flashSale.current_sale)/100; // giá mới trong flashsale
+                product.save();
+            });}
+            });
+        return new ServiceResponse(
+            200,
+            Status.SUCCESS,
+            Messages.UPDATE_FLASHSALE_SUCCESS
+        )}
     catch (err) {
-   
         return new ServiceResponse(
             500,
             Status.ERROR,
             Messages.INTERNAL_SERVER
-        )
-        }
+        )}
     }
 
 }

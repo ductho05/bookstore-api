@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const FlashSale = new Schema({
     product: { type: mongoose.Schema.Types.String, ref: "Product" },
     current_sale: { type: Number, require: true }, // giảm giá hiện tại
+    hide_price: { type: String, require: true }, // Ngày sales
     date_sale: { type: String }, // Ngày sales
     point_sale: { type: Number, require: true }, // khung giờ sale trong ngày
     time_sale: { type: Number, require: true, default: 3 }, // Thời gian sale

@@ -69,7 +69,10 @@ class FlashUserControllers {
     // Thêm dữ liệu sách
     async addFlash(req, res) {
 
-        const data = { ...req.body }
+        const data = req.body 
+        console.log(data)
+
+
 
         const response = await FlashUserService.add(data)
 

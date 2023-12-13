@@ -82,7 +82,7 @@ class OrderItemService {
     async getByOrderStatus(status, status_order, user) {
 
         try {
-            const orderItemList = await OrderItem.find({ status: status })
+            const orderItemList = await OrderItem.find(status ? { status: status } : {})
                 .populate("order")
                 .populate({
                     path: "product",
@@ -93,25 +93,26 @@ class OrderItemService {
                 })
                 .exec()
 
-            const newData = orderItemList.filter((orderItem) =>
-                orderItem?.order?.status == status_order && orderItem?.order?.user == user)
+            let newData = []
+            if (status) {
 
-            const orderItemDTOList = []
+                newData = orderItemList.filter((orderItem) =>
+                    orderItem?.order?.status == status_order && orderItem?.order?.user == user)
+            } else {
 
-            newData.forEach(orderItem => {
-
-                const orderItemDTO = OrderItemDTO.mapToOrderItemDTO(orderItem)
-                orderItemDTOList.push(orderItemDTO)
-            })
+                newData = orderItemList.filter((orderItem) =>
+                    orderItem?.order?.status == status_order)
+            }
 
             return new ServiceResponse(
                 200,
                 Status.SUCCESS,
                 Messages.GET_DATA_SUCCESS,
-                orderItemDTOList
+                newData
             )
         } catch (err) {
 
+            console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -153,6 +154,13 @@ class OrderItemService {
 
             const orderItem = new OrderItem({ ...data })
             await orderItem.save()
+
+            // kiểm tra nếu sản phẩm trong giỏ hàng trong flashsale thì update lại số lượng flashsale
+            // const flashsale = await FlashSale.findOne({ product: data.product,  })
+            // if (flashsale) {                    
+            //         flashsale.sold_sale = flashsale.sold_sale + data.quantity
+            //         await flashsale.save()
+            //     }
 
             return new ServiceResponse(
                 200,

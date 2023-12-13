@@ -2,7 +2,8 @@ const Response = require("../response/Response");
 const FlashSaleService = require("../services/FlashSaleService");
 const Status = require("../utils/Status");
 const Validator = require("../validator/Validator")
-
+const { format } = require('date-fns-tz');
+const moment = require('moment-timezone');
 class FlashSaleControllers {
 
     async getFlashById(req, res) {
@@ -65,24 +66,36 @@ class FlashSaleControllers {
 
     // Thêm dữ liệu sách
     async addProduct(req, res) {
+
+        // Đặt múi giờ cho Việt Nam
+        const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
+
+        // Lấy thời gian hiện tại ở Việt Nam
+        const currentTimeInVietnam = moment().tz(vietnamTimeZone);
+
+        // Lấy số giờ hiện tại
+        const currentHourInVietnam = currentTimeInVietnam.get('hours');
+
         const currentDate = new Date();
         const inputDate = new Date(req.body.date_sale);
 
         const currentHour = currentDate.getHours();
         const inputTime = req.body.point_sale;
 
-        let toDay = currentDate.toISOString().slice(0, 10);
-        let inputDay = inputDate.toISOString().slice(0, 10);
+        let toDay =   format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
+        let inputDay = format(inputDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
 
         const body = { ...req.body }
 
-        const response = await FlashSaleService.addProduct(currentHour, inputTime, toDay, inputDay, body)
+        const response = await FlashSaleService.addProduct(currentHourInVietnam, currentHour, inputTime, toDay, inputDay, body)
 
         res.status(response.statusCode).json(new Response(
             response.status,
             response.message,
             response.data
         ))
+
+        console.log(response.message)
     }
 
     // Sửa dữ liệu sách theo id
@@ -130,26 +143,26 @@ class FlashSaleControllers {
     }
 
     async addLoopSale(req, res) {
-            
-            const response = await FlashSaleService.addLoopSale()
-    
-            res.status(response.statusCode).json(new Response(
-                response.status,
-                response.message,
-            ))
-        }
+  
+          await FlashSaleService.addLoopSale();
+            // console.log(response.statusCode, res)
+            //     res.status(response.statusCode).json(new Response(
+            //     // response.status,
+            //     // response.message,
+            //     // response.data
+            //   ))
+        } 
+
 
     async checkAndUpdatePrice(req, res) {
-            
-            const response = await FlashSaleService.checkAndUpdatePrice()
+        console.log("checkAndUpdatePrice")            
+        await FlashSaleService.checkAndUpdatePrice()
     
-            res.status(response.statusCode).json(new Response(
-                response.status,
-                response.message,
-            ))
-        }
-
-        
+            // res.status(response.statusCode).json(new Response(
+            //     response.status,
+            //     response.message,
+            // ))
+    }       
 
 }
 
