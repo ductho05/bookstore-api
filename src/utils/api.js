@@ -7,9 +7,9 @@ class Constants {
     urlapi = "https://bookstore-ta-v3.onrender.com/bookstore/api/v1"
 
     // local
-    // urlui = "http://localhost:3456"
+    urlui = "http://localhost:3456"
     // deloy111
-    urlui = "https://bookstore-ta.vercel.app"
+    // urlui = "https://bookstore-ta.vercel.app"
 
     ExpiresIn = "2h"
 

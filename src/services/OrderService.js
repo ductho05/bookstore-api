@@ -101,7 +101,7 @@ class OrderService {
                     .limit(limit);
             } else {
 
-                orderList = await Order.find({ user: id, status: new RegExp(status, "i") })
+                orderList = await Order.find({ status: new RegExp(status, "i") })
                     .populate("user")
                     .sort({ updatedAt: -1 })
                     .skip((page - 1) * limit)
