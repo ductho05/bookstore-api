@@ -2,7 +2,10 @@ const ServiceResponse = require("../response/ServiceResponse")
 const Status = require("../utils/Status")
 const Messages = require("../utils/Messages")
 const FlashUser = require("../models/FlashUser")
-
+const FlashSale = require("../models/FlashSale");
+const OrderItem = require("../models/OrderItem");
+const { format } = require('date-fns-tz');
+const moment = require('moment-timezone');
 class FlashUserService {
 
     async getById(id) {
@@ -169,12 +172,36 @@ class FlashUserService {
     }
 
     async add(data) {
+        console.log(data);
 
-        try {
+        try {   
+      
+            const product = await FlashUser.create(data);
+              
+            console.log(product);
+            // Đặt múi giờ cho Việt Nam
+            const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
 
-            const product = new FlashUser({ ...data })
+            // Lấy thời gian hiện tại ở Việt Nam
+            const currentTimeInVietnam = moment().tz(vietnamTimeZone);
 
+            // Lấy số giờ hiện tại
+            const currentHourInVietnam = currentTimeInVietnam.get('hours');
+            //const flash = await FlashUser.create(req.body);
+            const currentDate = new Date();
+            let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
+            let current_point_sale = Math.floor(currentHourInVietnam/3);
+            
+            console.log(toDay, current_point_sale);
+            
             if (product) {
+                const flashSale = await FlashSale.find({ _id: data.flashid, date_sale: toDay, point_sale: current_point_sale });
+                console.log(flashSale);
+                
+                if (flashSale.length > 0) {
+                    flashSale[0].sold_sale += data.mount;
+                    await FlashSale.findByIdAndUpdate(flashSale[0]._id, flashSale[0]).exec();
+                }            
 
                 return new ServiceResponse(
                     200,
@@ -189,8 +216,9 @@ class FlashUserService {
                     Status.ERROR,
                     Messages.INSERT_DATA_ERROR
                 )
-            }
+            }    
         } catch (err) {
+            console.log('afdafdas', err);
 
             return new ServiceResponse(
                 500,
@@ -242,8 +270,8 @@ class FlashUserService {
             const currentHour = currentDate.getHours();
             // const inputTime = req.body.point_sale;
 
-            let toDay = currentDate.toISOString().slice(0, 10);
-            //let inputDay = inputDate.toISOString().slice(0, 10);
+            let toDay =  format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
+            //let inputDay = inputDate.().slice(0, 10);
             // Tìm tất cả các Flash Sale đã hết hạn
             const expiredSales = await FlashUser.find({ date_sale: { $lte: toDay } });
             // Xóa các Flash Sale đã hết hạn

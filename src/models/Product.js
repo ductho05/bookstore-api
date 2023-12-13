@@ -6,6 +6,7 @@ const Product = new Schema({
     author: { type: String, require: true },
     published_date: { type: String },
     price: { type: Number, require: true },
+    containprice: { type: Number, default: 1 }, // lưu trữ giá bán khi hết flashsale
     old_price: { type: Number, require: true },
     rate: { type: Number, default: 0 },
     sold: { type: Number, default: 0 },

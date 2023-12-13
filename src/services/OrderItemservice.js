@@ -19,8 +19,8 @@ class OrderItemService {
 
             orderItemList.forEach(orderItem => {
 
-                const orderItemDTO = OrderItemDTO.mapToOrderItemDTO(orderItem)
-                orderItemDTOList.push(orderItemDTO)
+                //const orderItemDTO = OrderItemDTO.mapToOrderItemDTO(orderItem)
+                orderItemDTOList.push(orderItem)
             })
 
             return new ServiceResponse(
@@ -154,6 +154,13 @@ class OrderItemService {
 
             const orderItem = new OrderItem({ ...data })
             await orderItem.save()
+
+            // kiểm tra nếu sản phẩm trong giỏ hàng trong flashsale thì update lại số lượng flashsale
+            // const flashsale = await FlashSale.findOne({ product: data.product,  })
+            // if (flashsale) {                    
+            //         flashsale.sold_sale = flashsale.sold_sale + data.quantity
+            //         await flashsale.save()
+            //     }
 
             return new ServiceResponse(
                 200,
