@@ -16,11 +16,15 @@ const isRun = true
 if (isRun == true) {
     // lặp lại sale cho ngày hôm sau
     const rule = new schedule.RecurrenceRule()
-    rule.hour = 23
-    rule.minute = 59
+    // local
+    // rule.hour = 23
+    // deloy
+    rule.hour = 1
+    rule.minute = 0
     rule.second = 0
     schedule.scheduleJob(rule, () => {
-        FlashSaleController.addLoopSale()
+        //FlashSaleController.addLoopSale()
+        console.log('loop sale')
     })
 
     // Tạo một quy tắc định kỳ cho mỗi 3 tiếng
