@@ -19,12 +19,24 @@ if (isRun == true) {
     // local
     // rule.hour = 23
     // deloy
-    rule.hour = 1
-    rule.minute = 4
+    rule.hour = 4
+    rule.minute = 14
     rule.second = 0
     schedule.scheduleJob(rule, () => {
         //FlashSaleController.addLoopSale()
-        console.log('loop sale')
+        console.log('loop sale 4')
+    })
+
+    const rule3 = new schedule.RecurrenceRule()
+    // local
+    // rule.hour = 23
+    // deloy
+    rule3.hour = 0
+    rule3.minute = 14
+    rule3.second = 0
+    schedule.scheduleJob(rule3, () => {
+        //FlashSaleController.addLoopSale()
+        console.log('loop sale 0')
     })
 
     // Tạo một quy tắc định kỳ cho mỗi 3 tiếng
