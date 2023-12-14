@@ -104,10 +104,23 @@ class FlashSaleControllers {
     // Sửa dữ liệu sách theo id
     async updateFlashSale(req, res) {
 
+        // Đặt múi giờ cho Việt Nam
+        const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
+
+        // Lấy thời gian hiện tại ở Việt Nam
+        const currentTimeInVietnam = moment().tz(vietnamTimeZone);
+
+        // Lấy số giờ hiện tại
+        const currentHourInVietnam = currentTimeInVietnam.get('hours');
+
+        const currentDate = new Date();
+
+        let toDay =   format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
+
         const id = req.params.id
         const updateProduct = req.body
 
-        const response = await FlashSaleService.update(id, updateProduct)
+        const response = await FlashSaleService.update(id, updateProduct, currentHourInVietnam, toDay)
 
         res.status(response.statusCode).json(new Response(
             response.status,

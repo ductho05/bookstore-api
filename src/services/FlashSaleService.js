@@ -346,16 +346,63 @@ class FlashSaleService {
         }
     }
 
-    async update(id, updateProduct) {
+    async update(id, updateProduct, currentHourInVietnam, toDay) {
+        console.log("da vao daycurrentHourInVietnam", currentHourInVietnam)
         try {
             const result = await FlashSale.findByIdAndUpdate({ _id: id }, updateProduct).exec()
+            
             await Product.findById(result.product).exec().then((product) => {
                     //console.log("da vao d12121ay", updateProduct)
-                    product.price = product.old_price * (100 - updateProduct.current_sale)/100;
+                    // từ hiện tại đến hiện tại, đã có contain nên chỉ update giá
+                    if (result.date_sale == toDay && 
+                        result.point_sale == Math.floor(currentHourInVietnam/3) &&
+                        updateProduct.date_sale == toDay && 
+                        updateProduct.point_sale == Math.floor(currentHourInVietnam/3)) {
+                        product.price = product.old_price * (100 - updateProduct.current_sale)/100;
+                    }   
+                    // từ hiện tại đến tương lai, đã có contain nên chỉ update giá (giá là giá contain)
+                    if (result.date_sale == toDay && 
+                        result.point_sale == Math.floor(currentHourInVietnam/3) &&
+                        (
+                        updateProduct.date_sale > toDay || (updateProduct.date_sale == toDay && 
+                        updateProduct.point_sale > Math.floor(currentHourInVietnam/3)))) {
+                        product.price = product.containprice;
+                        product.containprice = 1;
+                    }   
+                    // từ tương lai đến tương lai, chưa có contain và cũng không cần update giá (giá chưa sale)
+                    if ((
+                        result.date_sale > toDay || (result.date_sale == toDay && 
+                        result.point_sale > Math.floor(currentHourInVietnam/3))) && (
+                            updateProduct.date_sale > toDay || (updateProduct.date_sale == toDay && 
+                            updateProduct.point_sale > Math.floor(currentHourInVietnam/3)))) {
+                        product.price = product.price;
+                    }     // OK
+                    // từ tương lai đến hiện tại, chưa có contain nên cần tạo contain và update giá
+                    if ((
+                        result.date_sale > toDay || (result.date_sale == toDay && 
+                        result.point_sale > Math.floor(currentHourInVietnam/3))) && (
+                             (updateProduct.date_sale == toDay && 
+                            updateProduct.point_sale == Math.floor(currentHourInVietnam/3)))) {
+                                console.log("da vao day", result, updateProduct)
+                        product.containprice = product.price;
+                        product.price = product.old_price * (100 - updateProduct.current_sale)/100;
+                    }        
+
+                    // đến quá khứ, contain đưa về giá 
+                    if ((
+                        result.date_sale > toDay || (result.date_sale == toDay && 
+                        result.point_sale > Math.floor(currentHourInVietnam/3))) && (
+                             (updateProduct.date_sale == toDay && 
+                            updateProduct.point_sale == Math.floor(currentHourInVietnam/3)))) {
+                                console.log("da vao day", result, updateProduct)
+                        product.containprice = product.price;
+                        product.price = product.old_price * (100 - updateProduct.current_sale)/100;
+                    }  
                     // product.sold +=  flashSale.sold_sale; // update đã bán
                     // product.price = product.containprice; // lấy lại giá ban đầu
                     //console.log("da vao d212ay", product.price)
                     product.save();
+                    console.log("KQ", product)
                 });
             //console.log("updateProduct: ", result, pro);
             if (result) {
@@ -530,27 +577,27 @@ class FlashSaleService {
             const flashSales1 = await FlashSale.find(current_point_sale == 0 ? { date_sale: yes, point_sale: 7 } : { date_sale: toDay, point_sale: current_point_sale - 1 });
             flashSales1.forEach(async (flashSale) => {
                 if (flashSale.product) {
-                    await Product.findById(flashSale.product).exec().then((product) => {
-                        console.log("da vao day", product)
-                        //product.sold +=  flashSale.sold_sale; // update đã bán
-                        product.price = product.containprice; // lấy lại giá ban đầu
-                        product.save();
-                    });
+                await Product.findById(flashSale.product).exec().then((product) => {
+                    console.log("da vao day", product)
+                    //product.sold +=  flashSale.sold_sale; // update đã bán
+                    product.price = product.containprice; // lấy lại giá ban đầu
+                    product.containprice = 1;
+                    product.save();
+                });
                 }
             });
 
             // Update lại giá của sản phẩm trong khung giờ hiện tại
             const flashSales = await FlashSale.find({ date_sale: toDay, point_sale: current_point_sale });
             flashSales.forEach(async (flashSale) => {
-                //console.log("flashSale: ", flashSale);
-                if (flashSale.product) {
-                    await Product.findById(flashSale.product).exec().then((product) => {
-                        console.log("da vao day")
-                        product.containprice = product.price; // chứa giá ban đầu
-                        product.price = product.old_price * (100 - flashSale.current_sale) / 100; // giá mới trong flashsale
-                        product.save();
-                    });
-                }
+            //console.log("flashSale: ", flashSale);
+            if (flashSale.product) {            
+                await Product.findById(flashSale.product).exec().then((product) => {
+                console.log("da vao day")
+                product.containprice = product.price; // chứa giá ban đầu
+                product.price = product.old_price * (100 - flashSale.current_sale)/100; // giá mới trong flashsale
+                product.save();
+            });}
             });
             const listUsers = await User.find().exec()
             let description = "Ưu đãi chương trình TA BookStore Flash Sale dành cho tất cả khách hàng. Xem ngay!"
@@ -578,19 +625,17 @@ class FlashSaleService {
 
                 await userNotification.save()
             })
-            return new ServiceResponse(
-                200,
-                Status.SUCCESS,
-                Messages.UPDATE_FLASHSALE_SUCCESS
-            )
-        }
-        catch (err) {
-            return new ServiceResponse(
-                500,
-                Status.ERROR,
-                Messages.INTERNAL_SERVER
-            )
-        }
+        return new ServiceResponse(
+            200,
+            Status.SUCCESS,
+            Messages.UPDATE_FLASHSALE_SUCCESS
+        )}
+    catch (err) {
+        return new ServiceResponse(
+            500,
+            Status.ERROR,
+            Messages.INTERNAL_SERVER
+        )}
     }
 
     // check flashsale đã hết hàng chưa
