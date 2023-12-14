@@ -11,7 +11,7 @@ router.post("/update/:id", authorization, FlashSaleController.updateFlashSale)
 router.get("/delete/:id", authorization, FlashSaleController.deleteFlashSale)
 router.get("/:id", FlashSaleController.getFlashById)
 
-const isRun = true
+const isRun = false
 
 if (isRun == true) {
     // lặp lại sale cho ngày hôm sau
