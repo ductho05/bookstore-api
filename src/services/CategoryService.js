@@ -5,7 +5,7 @@ const Messages = require("../utils/Messages")
 
 class CategoryService {
 
-    async getAll(filter) {
+    async getAll(filter, limit) {
         try {
 
             const data = filter != "simple" ? await Category.aggregate([
@@ -33,7 +33,7 @@ class CategoryService {
                         categories: { $push: '$$ROOT' }
                     }
                 }
-            ]) : await Category.find().limit(50).exec();
+            ]) : await Category.find().limit(limit).exec();
 
             return new ServiceResponse(
                 200,
@@ -97,7 +97,14 @@ class CategoryService {
                 )
             } else {
 
-                const newCategory = new Category({ ...category })
+                const randomId = Math.floor(Math.random() * 999) + 1
+                let findId = null
+                while (findId) {
+
+                    randomId += 1
+                    findId = Category.findOne({ _id: randomId })
+                }
+                const newCategory = new Category({ ...category, _id: randomId })
                 await newCategory.save()
 
                 return new ServiceResponse(
@@ -108,6 +115,8 @@ class CategoryService {
             }
 
         } catch (err) {
+
+            console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,

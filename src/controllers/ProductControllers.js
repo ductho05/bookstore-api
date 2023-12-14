@@ -234,7 +234,7 @@ class ProductControllers {
     // Lấy sách theo danh mục
     async getProductByCategory(req, res) {
 
-        var limit = req.query.limit || 0;
+        var limit = req.query.limit;
         var id = req.query.category;
 
         const response = await ProductService.getByCategory(id, limit)
