@@ -4,7 +4,7 @@ class Constants {
     // local
     //urlapi = "https://bookstore-ta-v3.onrender.com/bookstore/api/v1"
     // deloy
-    urlapi = "https://bookstore-ta-v3.onrender.com/bookstore/api/v1"
+    urlapi = "http://127.0.0.1:3000/bookstore/api/v1"
 
     // local
     urlui = "http://localhost:3456"

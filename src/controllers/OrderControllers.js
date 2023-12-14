@@ -262,9 +262,10 @@ class OrderController {
     }
 
     async createPaymentUrl(req, res) {
-
+        console.log('response122 da den 1', req)
         const response = await OrderService.createPaymentUrl(req)
 
+        console.log('response122 da den', response)
         res.status(response.statusCode).json(new Response(
             response.status,
             response.message,
@@ -276,10 +277,10 @@ class OrderController {
     async vnpayReturn(req, res) {
         const response = await OrderService.vnpayReturn(req, res)
 
-        res.status(response.statusCode).json(new Response(
-            response.status,
-            response.message,
-        ))
+        // res.status(response.statusCode).json(new Response(
+        //     response.status,
+        //     response.message,
+        // ))
     }
 }
 

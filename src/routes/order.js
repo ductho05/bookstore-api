@@ -34,7 +34,7 @@ router.post("/filter/time", authentication, orderControllers.getAllOrderByTime)
 router.get("/status", authentication, orderControllers.getTotalOrderByStatus)
 router.post("/user", authentication, orderControllers.getAllOrderByUser)
 router.post('/create_payment_url', authentication, orderControllers.createPaymentUrl)
-router.get('/vnpay_return', authentication, orderControllers.vnpayReturn)
+router.get('/vnpay_return', orderControllers.vnpayReturn)
 // router.get('/', function(req, res, next){
 //     res.render('orderlist', { title: 'Danh sách đơn hàng' })
 // });

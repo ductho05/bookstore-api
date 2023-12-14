@@ -270,15 +270,15 @@ class FlashSaleService {
                         product.save();
                     });
                 }
-                // // Trong khung giờ tương lai
-                // else {
-                //     await Product.findById(body.product).exec().then((product) => {
-                //         // lưu giá ban đầu
-                //         product.containprice = product.price;
-                //         //product.price = product.old_price * (100 - req.body.current_sale)/100;
-                //         product.save();
-                //     });
-                // }
+                // Trong khung giờ tương lai
+                else {
+                    await Product.findById(body.product).exec().then((product) => {
+                        // lưu giá ban đầu
+                        product.containprice = 1;
+                        //product.price = product.old_price * (100 - req.body.current_sale)/100;
+                        product.save();
+                    });
+                }
                 // Thêm bản ghi mới FlashSale
                 const data = await FlashSale.create(body);
 
@@ -388,16 +388,45 @@ class FlashSaleService {
                         product.price = product.old_price * (100 - updateProduct.current_sale)/100;
                     }        
 
-                    // đến quá khứ, contain đưa về giá 
-                    if ((
-                        result.date_sale > toDay || (result.date_sale == toDay && 
-                        result.point_sale > Math.floor(currentHourInVietnam/3))) && (
-                             (updateProduct.date_sale == toDay && 
-                            updateProduct.point_sale == Math.floor(currentHourInVietnam/3)))) {
+                    // đến quá khứ, contain đưa về giá 1 và giá đưa về giá ban đầu
+                    if ((updateProduct.date_sale == toDay && 
+                            updateProduct.point_sale < Math.floor(currentHourInVietnam/3)) || updateProduct.date_sale < toDay) {
                                 console.log("da vao day", result, updateProduct)
-                        product.containprice = product.price;
-                        product.price = product.old_price * (100 - updateProduct.current_sale)/100;
+                        // product.containprice = product.price;
+                        // product.price = product.old_price * (100 - updateProduct.current_sale)/100;
+
+                        if (product.containprice == 1) {
+                            // từ không phải hiện tại
+                            product.price = product.price
+                            product.containprice = 1
+                        }
+                        else if (product.containprice != 1) {
+                            // từ hiện tại
+                           product.price = product.containprice
+                           product.containprice = 1
+                        }
                     }  
+
+                    // từ quá khứ đến hiện tại, đã có contain, cần cập nhập lại giá
+                    if ( (updateProduct.date_sale == toDay && 
+                        updateProduct.point_sale == Math.floor(currentHourInVietnam/3)) && (
+                            result.date_sale < toDay || (result.date_sale == toDay && 
+                                result.point_sale < Math.floor(currentHourInVietnam/3)))) {
+                        
+                        product.containprice = product.price
+                        product.price = product.old_price * (100 - updateProduct.current_sale)/100;
+                    }    
+
+                    
+                    // từ quá khứ đến tương lai, đã có contain, không cần cập nhập lại giá
+                    if ( (updateProduct.date_sale > toDay) || (updateProduct.date_sale == toDay && 
+                        updateProduct.point_sale > Math.floor(currentHourInVietnam/3)) && (
+                            result.date_sale < toDay || (result.date_sale == toDay && 
+                                result.point_sale < Math.floor(currentHourInVietnam/3)))) {
+                        
+                        product.price = product.price
+                    }   
+                    
                     // product.sold +=  flashSale.sold_sale; // update đã bán
                     // product.price = product.containprice; // lấy lại giá ban đầu
                     //console.log("da vao d212ay", product.price)

@@ -25,11 +25,12 @@ class SystemControllers {
       const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
       const currentTimeInVietnam = moment().tz(vietnamTimeZone);
       const date =  currentTimeInVietnam.format('YYYY-MM-DD');
-      const response = await SystemService.checkStatus(date)
-            res.status(response.statusCode).json(new Response(
-                response.status,
-                response.message,        
-            ))
+      await SystemService.checkStatus(date)
+      //const response = await SystemService.checkStatus(date)
+            // res.status(response.statusCode).json(new Response(
+            //     response.status,
+            //     response.message,        
+            // ))
   
 }
 
