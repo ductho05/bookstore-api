@@ -4,8 +4,7 @@ const Messages = require("../utils/Messages")
 const Order = require("../models/Order")
 const OrderDTO = require("../dtos/OrderDTO")
 const User = require("../models/User")
-
-const moment = require('moment');
+const moment = require('moment-timezone');
 const constants = require('../utils/api.js')
 let config =
 {
