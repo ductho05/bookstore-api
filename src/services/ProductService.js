@@ -7,117 +7,128 @@ const Category = require("../models/Category")
 
 class ProductService {
 
-    async getALL(category, title, num, start, end, sort, filter) {
+    async getALL(minPrice, maxPrice, rate, category, title, num, start, end, sort, filter) {
 
         try {
 
-            const data = await Product.find(category ? { categoryId: category } : {})
+            console.log(sort)
+            let customSort = { "updatedAt": -1 }
+            if (sort) {
+                if (filter == "price") {
+                    if (sort == "asc") {
+                        customSort = { "price": 1 }
+                    }
+                    if (sort == "desc") {
+                        customSort = { "price": -1 }
+                    }
+                }
+                if (filter == "sold") {
+                    if (sort == "asc") {
+                        customSort = { "sold": 1 }
+                    }
+                    if (sort == "desc") {
+                        customSort = { "sold": -1 }
+                    }
+                }
+                if (filter == "rate") {
+                    if (sort == "asc") {
+                        customSort = { "rate": 1 }
+                    }
+                    if (sort == "desc") {
+                        customSort = { "rate": -1 }
+                    }
+                }
+                // if (filter == "published_date") {
+                //     data.sort(function (a, b) {
+                //         let dateA = new Date(a.published_date);
+                //         let dateB = new Date(b.published_date);
+                //         if (sort == "asc") {
+                //             return dateA - dateB;
+                //         }
+                //         if (sort == "desc") {
+                //             return dateB - dateA;
+                //         }
+                //     });
+                // }
+                // if (filter == "title") {
+                //     data.sort(function (a, b) {
+                //         if (sort == "asc") {
+                //             return a.title - b.title;
+                //         }
+                //         if (sort == "desc") {
+                //             return b.title - a.title;
+                //         }
+                //     });
+                // }
+                // if (filter == "author") {
+                //     data.sort(function (a, b) {
+                //         if (sort == "asc") {
+                //             return a.author - b.author;
+                //         }
+                //         if (sort == "desc") {
+                //             return b.author - a.author;
+                //         }
+                //     });
+                // }
+                // if (filter == "status") {
+                //     data.sort(function (a, b) {
+                //         if (sort == "asc") {
+                //             return a.status - b.status;
+                //         }
+                //         if (sort == "desc") {
+                //             return b.status - a.status;
+                //         }
+                //     });
+                // }
+                // if (filter == "discount") {
+                //     data.sort(function (a, b) {
+                //         let discountA = a.old_price / a.price;
+                //         let discountB = b.old_price / b.price;
+                //         if (sort == "asc") {
+                //             return discountA - discountB;
+                //         }
+                //         if (sort == "desc") {
+                //             return discountB - discountA;
+                //         }
+                //     });
+                // }
+            }
+
+            const data = await Product
+                .find(category ? { categoryId: category } : {})
                 .find(title ? { title: new RegExp(title, "i") } : {})
                 .find({ images: { $ne: null } })
+                .find(rate ? { rate } : {})
+                .find(minPrice ? { price: { $gte: minPrice } } : {})
+                .find(minPrice && maxPrice ? { price: { $gte: minPrice, $lte: maxPrice } } : {})
                 .populate("categoryId")
                 .skip(start)
                 .limit(end)
-                .sort({ "updatedAt": -1 })
-                .exec();
-            if (sort) {
-                if (filter == "price") {
-                    data.sort(function (a, b) {
-                        if (sort == "asc") {
-                            return a.price - b.price;
-                        }
-                        if (sort == "desc") {
-                            return b.price - a.price;
-                        }
-                    });
-                }
-                if (filter == "sold") {
-                    data.sort(function (a, b) {
-                        if (sort == "asc") {
-                            return a.sold - b.sold;
-                        }
-                        if (sort == "desc") {
-                            return b.sold - a.sold;
-                        }
-                    });
-                }
-                if (filter == "rate") {
-                    data.sort(function (a, b) {
-                        if (sort == "asc") {
-                            return a.rate - b.rate;
-                        }
-                        if (sort == "desc") {
-                            return b.rate - a.rate;
-                        }
-                    });
-                }
-                if (filter == "published_date") {
-                    data.sort(function (a, b) {
-                        let dateA = new Date(a.published_date);
-                        let dateB = new Date(b.published_date);
-                        if (sort == "asc") {
-                            return dateA - dateB;
-                        }
-                        if (sort == "desc") {
-                            return dateB - dateA;
-                        }
-                    });
-                }
-                if (filter == "title") {
-                    data.sort(function (a, b) {
-                        if (sort == "asc") {
-                            return a.title - b.title;
-                        }
-                        if (sort == "desc") {
-                            return b.title - a.title;
-                        }
-                    });
-                }
-                if (filter == "author") {
-                    data.sort(function (a, b) {
-                        if (sort == "asc") {
-                            return a.author - b.author;
-                        }
-                        if (sort == "desc") {
-                            return b.author - a.author;
-                        }
-                    });
-                }
-                if (filter == "status") {
-                    data.sort(function (a, b) {
-                        if (sort == "asc") {
-                            return a.status - b.status;
-                        }
-                        if (sort == "desc") {
-                            return b.status - a.status;
-                        }
-                    });
-                }
-                if (filter == "discount") {
-                    data.sort(function (a, b) {
-                        let discountA = a.old_price / a.price;
-                        let discountB = b.old_price / b.price;
-                        if (sort == "asc") {
-                            return discountA - discountB;
-                        }
-                        if (sort == "desc") {
-                            return discountB - discountA;
-                        }
-                    });
-                }
-            }
+                .sort(customSort)
 
-            if (num > 0) {
-                data.splice(num);
+            const quantity = await Product
+                .find(category ? { categoryId: category } : {})
+                .find(title ? { title: new RegExp(title, "i") } : {})
+                .find({ images: { $ne: null } })
+                .find(rate ? { rate } : {})
+                .find(minPrice ? { price: { $gte: minPrice } } : {})
+                .find(minPrice && maxPrice ? { price: { $gte: minPrice, $lte: maxPrice } } : {})
+                .countDocuments()
+
+            const result = {
+                products: data,
+                quantity
             }
 
             return new ServiceResponse(
                 200,
                 Status.SUCCESS,
                 Messages.GET_DATA_SUCCESS,
-                data
+                result
             )
         } catch (err) {
 
+            console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -617,7 +628,9 @@ class ProductService {
             if (result) {
 
                 const newSold = sold + result.sold
+                const newQuantity = result.quantity - sold
                 result.sold = newSold
+                result.quantity = newQuantity
 
                 result.save()
                 return new ServiceResponse(

@@ -4,6 +4,7 @@ const Messages = require("../utils/Messages")
 const System = require("../models/System")
 // const SystemDTO = require("../dtos/SystemDTO")
 const moment = require('moment-timezone');
+const { superAdminCode } = require("../utils/api");
 
 class SystemService {
 
@@ -11,9 +12,9 @@ class SystemService {
 
         try {
 
-         //   const listOrder = await Order.find({ user: id })
+            //   const listOrder = await Order.find({ user: id })
             const system = await System.findOne({ isStatus: true });
-        
+
 
             return new ServiceResponse(
                 200,
@@ -33,21 +34,21 @@ class SystemService {
 
     async checkStatus(date) {
 
-        try {           
+        try {
 
             const system = await System.findOne({ isStatus: true });
             if (system.end < date) {
                 system.isStatus = false;
                 system.save();
-              }
+            }
             return new ServiceResponse(
                 200,
                 Status.SUCCESS,
-                Messages.GET_DATA_SUCCESS,                
+                Messages.GET_DATA_SUCCESS,
             )
         } catch (err) {
 
-           // console.log(err)
+            // console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -63,65 +64,65 @@ class SystemService {
             const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
             // Lấy thời gian hiện tại ở Việt Nam
             const currentTimeInVietnam = moment().tz(vietnamTimeZone);
-            const date =  currentTimeInVietnam.format('YYYY-MM-DD');
+            const date = currentTimeInVietnam.format('YYYY-MM-DD');
 
-           // const order = new Order({ ...data })
+            // const order = new Order({ ...data })
             const system = new System({ ...data });
 
 
 
-           console.log('system, ', system)
+            console.log('system, ', system)
 
-            if (system.type == "week" ) {
+            if (system.type == "week") {
                 // giá trị ngày thứ 2 tuần
                 if (system.isRun == true) {
-                  system.end = moment(date).add(6, 'days').format('YYYY-MM-DD');
-                  system.start = date
+                    system.end = moment(date).add(6, 'days').format('YYYY-MM-DD');
+                    system.start = date
                 }
                 // giá trị ngày thứ 2 tuần sau
                 else {
-                  const date = new Date();
-                  const day = date.getDay();
-                  const diff = date.getDate() - day + (day == 0 ? -6 : 1) - 7;
-                  const mondaynext = new Date(date.setDate(diff + 14));
-                  system.start = moment(mondaynext).format('YYYY-MM-DD');
-                  system.end = moment(mondaynext).add(6, 'days').format('YYYY-MM-DD');
+                    const date = new Date();
+                    const day = date.getDay();
+                    const diff = date.getDate() - day + (day == 0 ? -6 : 1) - 7;
+                    const mondaynext = new Date(date.setDate(diff + 14));
+                    system.start = moment(mondaynext).format('YYYY-MM-DD');
+                    system.end = moment(mondaynext).add(6, 'days').format('YYYY-MM-DD');
                 }
-              }
-              // end = date + 1 tháng
-              if (system.type == "month") {
+            }
+            // end = date + 1 tháng
+            if (system.type == "month") {
                 // giá trị ngày hôm nay
                 if (system.isRun == true) {
-                  system.end = moment(date).add(1, 'months').format('YYYY-MM-DD');
-                  system.start = date
+                    system.end = moment(date).add(1, 'months').format('YYYY-MM-DD');
+                    system.start = date
                 }
                 // giá trị ngày đầu tiên của tháng sau
                 else {
-                  const date = new Date();          
-                  const firstmonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-                  const latemonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-                  system.start = moment(firstmonth).format('YYYY-MM-DD');
-                  system.end = moment(latemonth).format('YYYY-MM-DD');
+                    const date = new Date();
+                    const firstmonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+                    const latemonth = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+                    system.start = moment(firstmonth).format('YYYY-MM-DD');
+                    system.end = moment(latemonth).format('YYYY-MM-DD');
                 }
-              }
-              // end = date + 1 năm
-              // end = date + 1 tháng
-              if (system.type == "year") {
+            }
+            // end = date + 1 năm
+            // end = date + 1 tháng
+            if (system.type == "year") {
                 // giá trị ngày hôm nay
                 if (system.isRun == true) {
-                  system.end = moment(date).add(1, 'year').format('YYYY-MM-DD');
-                  system.start = date
+                    system.end = moment(date).add(1, 'year').format('YYYY-MM-DD');
+                    system.start = date
                 }
                 // giá trị ngày đầu tiên của năm sau
                 else {
-                  const date = new Date();          
-                  const firstyear = new Date(date.getFullYear() + 1, 0, 1);
-                  const lateyear = new Date(date.getFullYear() + 1, 11, 31);
-                  system.start = moment(firstyear).format('YYYY-MM-DD');
-                  system.end = moment(lateyear).format('YYYY-MM-DD');
+                    const date = new Date();
+                    const firstyear = new Date(date.getFullYear() + 1, 0, 1);
+                    const lateyear = new Date(date.getFullYear() + 1, 11, 31);
+                    system.start = moment(firstyear).format('YYYY-MM-DD');
+                    system.end = moment(lateyear).format('YYYY-MM-DD');
                 }
             }
-            if (data.key == "superadmin1811") {
+            if (data.key == superAdminCode) {
                 await system.save()
                 return new ServiceResponse(
                     200,
@@ -135,7 +136,7 @@ class SystemService {
                     Status.ERROR400,
                     Messages.NOT_KEY
                 )
-            }          
+            }
 
         } catch (err) {
 

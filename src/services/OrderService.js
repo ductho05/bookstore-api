@@ -100,25 +100,18 @@ class OrderService {
                     .limit(limit);
             } else {
 
-                orderList = await Order.find({status: new RegExp(status, "i") })
+                orderList = await Order.find({ status: new RegExp(status, "i") })
                     .populate("user")
                     .sort({ updatedAt: -1 })
                     .skip((page - 1) * limit)
                     .limit(limit);
             }
 
-            const orderDTOList = []
-            orderList.forEach(order => {
-
-                const orderDTO = OrderDTO.mapToOrderDTO(order)
-                orderDTOList.push(orderDTO)
-            })
-
             return new ServiceResponse(
                 200,
                 Status.SUCCESS,
                 Messages.GET_DATA_SUCCESS,
-                orderDTOList
+                orderList
             )
         } catch (err) {
 
