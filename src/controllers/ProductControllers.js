@@ -10,6 +10,12 @@ class ProductControllers {
 
         var category = req.query.category;
 
+        var rate = req.query.rate;
+
+        var minPrice = req.query.minPrice;
+
+        var maxPrice = req.query.maxPrice;
+
         // Tên sách
         var title = req.query.title;
         // Lấy num sản phẩm thôi
@@ -30,7 +36,7 @@ class ProductControllers {
         // Sắp xếp theo trường nào đó
         var filter = req.query.filter;
 
-        const response = await ProductService.getALL(category, title, num, start, end, sort, filter)
+        const response = await ProductService.getALL(minPrice, maxPrice, rate, category, title, num, start, end, sort, filter)
 
         res.status(response.statusCode).json(new Response(
             response.status,

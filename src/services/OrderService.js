@@ -108,18 +108,11 @@ class OrderService {
                     .limit(limit);
             }
 
-            const orderDTOList = []
-            orderList.forEach(order => {
-
-                const orderDTO = OrderDTO.mapToOrderDTO(order)
-                orderDTOList.push(orderDTO)
-            })
-
             return new ServiceResponse(
                 200,
                 Status.SUCCESS,
                 Messages.GET_DATA_SUCCESS,
-                orderDTOList
+                orderList
             )
         } catch (err) {
 

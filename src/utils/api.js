@@ -15,6 +15,10 @@ class Constants {
 
     mailSender = "fahashashopclone@gmail.com"
     mailPassword = "woycibkntohskmnz"
+
+    superAdminCode = "superadmin1811"
+
+    flashSaleImage = 'https://img.freepik.com/free-vector/special-flash-sale-modern-banner-design-vector-illustration_1017-38337.jpg'
 }
 
 module.exports = new Constants
