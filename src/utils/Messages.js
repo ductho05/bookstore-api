@@ -92,7 +92,7 @@ class Messages {
     PRODUCT_NOT_FOUND = "Product not found"
 
     UPDATE_FLASHSALE_SUCCESS = "Update flash sale successfully"
-
+    NOT_ENOUGH_QUANTITY = "Not enough quantity"
 }
 
 module.exports = new Messages

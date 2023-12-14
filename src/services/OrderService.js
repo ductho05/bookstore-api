@@ -309,12 +309,18 @@ class OrderService {
     }
 
     async insert(data) {
+        
+        //console.log('qrdyiash', data, flashsales)
 
         try {
             const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
             // Lấy thời gian hiện tại ở Việt Nam
             const currentTimeInVietnam = moment().tz(vietnamTimeZone);
             const date = currentTimeInVietnam.format('YYYY-MM-DD HH:mm:ss');
+
+            
+
+
             const order = new Order({ ...data })
             order.date = date;
             await order.save();
@@ -327,7 +333,6 @@ class OrderService {
             )
 
         } catch (err) {
-
             return new ServiceResponse(
                 500,
                 Status.ERROR,

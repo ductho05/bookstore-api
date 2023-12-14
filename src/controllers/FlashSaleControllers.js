@@ -17,7 +17,9 @@ class FlashSaleControllers {
             ))
         } else {
 
-            const response = await FlashSaleService.getById(value)
+            // var filter = req.query.filter;
+            var mount = req.query.mount;
+            const response = await FlashSaleService.getById(value, mount)
 
             res.status(response.statusCode).json(new Response(
                 response.status,
