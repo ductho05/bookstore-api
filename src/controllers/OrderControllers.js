@@ -2,7 +2,9 @@ const Response = require("../response/Response");
 const OrderService = require("../services/OrderService");
 const Status = require("../utils/Status");
 const Validator = require("../validator/Validator")
-
+const FlashSale = require("../models/FlashSale")
+const moment = require('moment-timezone');
+const { format } = require('date-fns-tz');
 class OrderController {
 
     async getAllOrderByUser(req, res) {
@@ -144,8 +146,24 @@ class OrderController {
     // Thêm mới 1 đơn hàng
     async insertOrder(req, res) {
 
-        const { error, value } = Validator.orderValidator.validate(req.body)
+        // console.log('adgjasd', req.body)
 
+            const { flashsales, ...data } = req.body;
+        // Đặt múi giờ cho Việt Nam
+        const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
+
+        // Lấy thời gian hiện tại ở Việt Nam
+        const currentTimeInVietnam = moment().tz(vietnamTimeZone);
+
+        // Lấy số giờ hiện tại
+        const currentHourInVietnam = currentTimeInVietnam.get('hours');
+        //const flash = await FlashUser.create(req.body);
+        const currentDate = new Date();
+        let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
+        let current_point_sale = Math.floor(currentHourInVietnam/3);
+        
+        const { error, value } = Validator.orderValidator.validate(data)
+        console.log('flashsales1', flashsales, error)
         if (error) {
 
             res.status(400).json(new Response(
@@ -154,13 +172,45 @@ class OrderController {
             ))
         } else {
 
-            const response = await OrderService.insert(value)
+            console.log('flashsales')
 
-            res.status(response.statusCode).json(new Response(
-                response.status,
-                response.message,
-                response.data
-            ))
+            const flashSalePromises = flashsales.map(async (item) => {
+                const flashSale = await FlashSale.find({ _id: item.flashid, date_sale: toDay, point_sale: current_point_sale });
+                if (flashSale.length > 0) {
+                    if (flashSale[0].sold_sale + item.mount > flashSale[0].num_sale) {
+                        return 'Not quantity' + flashSale[0].product
+                    }
+                    else {
+                        return 'OK'
+                    }
+                }
+                return 'OK'
+            });
+    
+            const flashSaleResults = await Promise.all(flashSalePromises);
+            // 'Not quantity'
+    
+            console.log('flashSaleResults', flashSaleResults);
+
+            if (flashSaleResults.filter(item => item.includes('Not quantity')).length > 0) {
+                console.log('da vao day roi ne')
+                const flashs = flashSaleResults.filter(item => item.includes('Not quantity')).map(item => item.split('Not quantity')[1])           
+                
+                return res.status(200).json(new Response(
+                    Status.ERROR401,
+                    'Số lượng sản phẩm trong flash sale không đủ',
+                    flashs
+                ))
+            }            
+                console.log('value, da vao day', value)
+                const response = await OrderService.insert(value)
+
+                res.status(response.statusCode).json(new Response(
+                    response.status,
+                    response.message,
+                    response.data
+                ))
+            
         }
     }
 

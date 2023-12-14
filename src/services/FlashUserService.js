@@ -199,8 +199,17 @@ class FlashUserService {
                 console.log(flashSale);
                 
                 if (flashSale.length > 0) {
-                    flashSale[0].sold_sale += data.mount;
-                    await FlashSale.findByIdAndUpdate(flashSale[0]._id, flashSale[0]).exec();
+                    if (flashSale[0].sold_sale + data.mount <= flashSale[0].num_sale) {
+                        flashSale[0].sold_sale += data.mount;
+                        await FlashSale.findByIdAndUpdate(flashSale[0]._id, flashSale[0]).exec();
+                    }  
+                    else {
+                        return new ServiceResponse(
+                            200,
+                            Status.ERROR,
+                            Messages.INSERT_DATA_ERROR
+                        )
+                    }                  
                 }            
 
                 return new ServiceResponse(

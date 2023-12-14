@@ -13,11 +13,12 @@ const { flashSaleImage, urlui } = require("../utils/api")
 const Notification = require("../models/Notification")
 class FlashSaleService {
 
-    async getById(id) {
+    async getById(value, mount) {
+
 
         try {
 
-            const data = await FlashSale.findById(id)
+            const data = await FlashSale.findById(value)
                 .populate({
                     path: 'product',
                     populate: {
@@ -26,7 +27,17 @@ class FlashSaleService {
                     }
                 })
                 .exec();
-
+            if (mount) {
+                if (data.sold_sale + mount > data.num_sale) {
+                    return new ServiceResponse(
+                        200,
+                        Status.WARNING,
+                        Messages.NOT_ENOUGH_QUANTITY,                        
+                            data
+                    )
+                }  
+            }   
+            
             return new ServiceResponse(
                 200,
                 Status.SUCCESS,
@@ -336,10 +347,17 @@ class FlashSaleService {
     }
 
     async update(id, updateProduct) {
-
         try {
-
             const result = await FlashSale.findByIdAndUpdate({ _id: id }, updateProduct).exec()
+            await Product.findById(result.product).exec().then((product) => {
+                    //console.log("da vao d12121ay", updateProduct)
+                    product.price = product.old_price * (100 - updateProduct.current_sale)/100;
+                    // product.sold +=  flashSale.sold_sale; // update đã bán
+                    // product.price = product.containprice; // lấy lại giá ban đầu
+                    //console.log("da vao d212ay", product.price)
+                    product.save();
+                });
+            //console.log("updateProduct: ", result, pro);
             if (result) {
 
                 return new ServiceResponse(
@@ -567,6 +585,35 @@ class FlashSaleService {
             )
         }
         catch (err) {
+            return new ServiceResponse(
+                500,
+                Status.ERROR,
+                Messages.INTERNAL_SERVER
+            )
+        }
+    }
+
+    // check flashsale đã hết hàng chưa
+    async checkFlashSale() {
+        try {
+            const currentDate = new Date();
+            let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
+            // Tìm tất cả các Flash Sale có ngày hết hạn là hôm nay
+            const expiredSales = await FlashSale.find({ date_sale: toDay });
+            // Xóa các Flash Sale đã hết hạn
+            for (const sale of expiredSales) {
+                // Nếu số lượng đã bán lớn hơn số lượng trong kho
+                if (sale.sold_sale > sale.num_sale) {
+                    // Xóa Flash Sale
+                    await FlashSale.deleteOne({ _id: sale._id });
+                }
+            }
+            return new ServiceResponse(
+                200,
+                Status.SUCCESS,
+                Messages.DELETE_DATA_SUCCESS
+            )
+        } catch (err) {
             return new ServiceResponse(
                 500,
                 Status.ERROR,
