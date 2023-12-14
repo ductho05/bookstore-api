@@ -20,7 +20,7 @@ if (isRun == true) {
     // rule.hour = 23
     // deloy
     rule.hour = 1
-    rule.minute = 0
+    rule.minute = 4
     rule.second = 0
     schedule.scheduleJob(rule, () => {
         //FlashSaleController.addLoopSale()
