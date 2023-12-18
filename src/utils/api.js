@@ -1,13 +1,15 @@
+const isDeploy = false
+
 class Constants {
     TOKEN_KEY = 'ductho2002';
-
+    deploy = isDeploy
     // local
-    //urlapi = "https://bookstore-ta-v3.onrender.com/bookstore/api/v1"
+    // urlapi = "https://bookstore-ta-v3.onrender.com/bookstore/api/v1"
     // deloy
-    urlapi = "http://127.0.0.1:3000/bookstore/api/v1"
+    urlapi = !isDeploy ? "http://127.0.0.1:3000/bookstore/api/v1" : "https://bookstore-ta-v3.onrender.com/bookstore/api/v1"
 
     // local
-    urlui = "http://localhost:3456"
+    urlui = !isDeploy ? "http://localhost:3456" : "https://bookstore-ta.vercel.app"
     // deloy111
     // urlui = "https://bookstore-ta.vercel.app"
 

@@ -7,6 +7,7 @@ class Status {
     SUCCESS = "OK"
     ERROR1 = "Failed"
     WARNING = "WARNING"
+    ERROR_FLASH_SALE="Not enough quantity in flash sale"
 }
 
 module.exports = new Status

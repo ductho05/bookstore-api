@@ -34,7 +34,7 @@ router.post("/filter/time", authentication, orderControllers.getAllOrderByTime)
 router.get("/status", authentication, orderControllers.getTotalOrderByStatus)
 router.post("/user", authentication, orderControllers.getAllOrderByUser)
 router.post('/create_payment_url', authentication, orderControllers.createPaymentUrl)
-router.get('/vnpay_return', authentication, orderControllers.vnpayReturn)
+router.get('/vnpay_return', orderControllers.vnpayReturn)
 // router.get('/', function(req, res, next){
 //     res.render('orderlist', { title: 'Danh sách đơn hàng' })
 // });
@@ -332,20 +332,20 @@ router.get('/vnpay_return', authentication, orderControllers.vnpayReturn)
 
 // });
 
-function sortObject(obj) {
-    let sorted = {};
-    let str = [];
-    let key;
-    for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            str.push(encodeURIComponent(key));
-        }
-    }
-    str.sort();
-    for (key = 0; key < str.length; key++) {
-        sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
-    }
-    return sorted;
-}
+// function sortObject(obj) {
+//     let sorted = {};
+//     let str = [];
+//     let key;
+//     for (key in obj) {
+//         if (obj.hasOwnProperty(key)) {
+//             str.push(encodeURIComponent(key));
+//         }
+//     }
+//     str.sort();
+//     for (key = 0; key < str.length; key++) {
+//         sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+//     }
+//     return sorted;
+// }
 
 module.exports = router

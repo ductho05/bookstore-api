@@ -302,7 +302,7 @@ class OrderService {
 
     async insert(data) {
         
-        //console.log('qrdyiash', data, flashsales)
+        // console.log('qrdyiash1212', data)
 
         try {
             const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
@@ -461,6 +461,7 @@ class OrderService {
             return new ServiceResponse(
                 200,
                 Status.SUCCESS,
+                Messages.GET_DATA_SUCCESS,
                 obj
             )
         } catch (err) {
@@ -492,11 +493,11 @@ class OrderService {
             let hmac = crypto.createHmac("sha512", secretKey);
             let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
             res.redirect(`${constants.urlui}/checkout?signed=${req.query.vnp_TxnRef}&status=${req.query.vnp_ResponseCode}`)
-            return new ServiceResponse(
-                200,
-                Status.SUCCESS,
-                req.query
-            )
+            // return new ServiceResponse(
+            //     200,
+            //     Status.SUCCESS,
+            //     req.query
+            // )
         } catch (err) {
             return new ServiceResponse(
                 500,
@@ -506,6 +507,23 @@ class OrderService {
         }
     }
 
+}
+
+
+function sortObject(obj) {
+	let sorted = {};
+	let str = [];
+	let key;
+	for (key in obj){
+		if (obj.hasOwnProperty(key)) {
+		str.push(encodeURIComponent(key));
+		}
+	}
+	str.sort();
+    for (key = 0; key < str.length; key++) {
+        sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+    }
+    return sorted;
 }
 
 module.exports = new OrderService

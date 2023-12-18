@@ -151,7 +151,8 @@ class OrderItemService {
     async insert(data) {
 
         try {
-
+            
+            // console.log('adta24343121', data)
             const orderItem = new OrderItem({ ...data })
             await orderItem.save()
 
