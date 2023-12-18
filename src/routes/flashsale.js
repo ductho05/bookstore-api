@@ -19,7 +19,7 @@ if (isRun == true) {
     // local
     // rule.hour = 23
     // deloy
-    rule.hour = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,  13, 14, 15, 16, 17, 18, 19, 20, 21, 22,  23]
+    rule.hour = 5
 
     rule.minute = [0, 1, 2, 3, 4, 5, 6, 7, 8,  9,  10,  11,  12,  13,  14,  15,
           16, 17, 18, 19, 20, 21, 22,  23,  24,  25,  26,  27,  28,  29, 30, 31,
@@ -28,10 +28,9 @@ if (isRun == true) {
     rule.second = 0
     schedule.scheduleJob(rule, () => {
         //FlashSaleController.addLoopSale()
-        console.log('loop sale 3')
+     
         console.log(new Date().getHours())
         console.log(new Date().getMinutes())
-        console.log(rule)
     })
 
     const rule3 = new schedule.RecurrenceRule()
