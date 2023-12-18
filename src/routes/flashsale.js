@@ -31,6 +31,7 @@ if (isRun == true) {
         console.log('loop sale 3')
         console.log(new Date().getHours())
         console.log(new Date().getMinutes())
+        console.log(rule)
     })
 
     const rule3 = new schedule.RecurrenceRule()
