@@ -200,13 +200,11 @@ class ProductService {
 
             if (data) {
 
-                const productDTO = ProductDTO.mapToProductDTO(data)
-
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,
                     Messages.GET_DATA_SUCCESS,
-                    productDTO
+                    data
                 )
             } else {
 
@@ -541,6 +539,15 @@ class ProductService {
 
             const product = new Product({ ...data })
 
+            if (product.old_price < product.price) {
+
+                return new ServiceResponse(
+                    400,
+                    Status.ERROR,
+                    Messages.ERROR_PRICE
+                )
+            }
+
             const findProduct = await Product.findOne({ title: product.title }).exec()
 
             if (findProduct) {
@@ -597,7 +604,8 @@ class ProductService {
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,
-                    Messages.UPDATE_DATA_SUCCESS
+                    Messages.UPDATE_DATA_SUCCESS,
+                    result
                 )
             } else {
 

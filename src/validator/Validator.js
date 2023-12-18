@@ -167,7 +167,8 @@ class Validator {
         list_Images: Joi.string().trim().min(1),
         images: Joi.string().pattern(new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/)),
         containprice: Joi.number().min(1000),
-        flashsaleprice: Joi.number().min(0)
+        flashsaleprice: Joi.number().min(0),
+        status_sell: Joi.boolean()
     })
 
     systemValidator = Joi.object({

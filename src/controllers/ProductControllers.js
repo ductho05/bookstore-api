@@ -295,7 +295,8 @@ class ProductControllers {
 
             res.status(response.statusCode).json(new Response(
                 response.status,
-                response.message
+                response.message,
+                response.data
             ))
         }
     }

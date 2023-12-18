@@ -93,6 +93,7 @@ class Messages {
 
     UPDATE_FLASHSALE_SUCCESS = "Update flash sale successfully"
     NOT_ENOUGH_QUANTITY = "Not enough quantity"
+    ERROR_PRICE = "Giá cũ phải lớn hơn hoặc bằng giá hiện tại"
 }
 
 module.exports = new Messages
