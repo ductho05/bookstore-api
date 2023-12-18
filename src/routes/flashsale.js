@@ -29,6 +29,8 @@ if (isRun == true) {
     schedule.scheduleJob(rule, () => {
         //FlashSaleController.addLoopSale()
         console.log('loop sale 3')
+        console.log(new Date().getHours())
+        console.log(new Date().getMinutes())
     })
 
     const rule3 = new schedule.RecurrenceRule()
