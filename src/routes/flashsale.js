@@ -4,39 +4,26 @@ const FlashSaleController = require("../controllers/FlashSaleControllers")
 const authentication = require("../middleware/Authentication")
 const authorization = require("../middleware/Authorization")
 const schedule = require('node-schedule')
-
+const constants = require('../utils/api.js')
 router.get("/", FlashSaleController.getProduct)
 router.post("/add", authorization, FlashSaleController.addProduct)
 router.post("/update/:id", authorization, FlashSaleController.updateFlashSale)
 router.get("/delete/:id", authorization, FlashSaleController.deleteFlashSale)
 router.get("/:id", FlashSaleController.getFlashById)
 
-const isRun = true
 
+const isRun = constants.deploy
 if (isRun == true) {
     // lặp lại sale cho ngày hôm sau
     const rule = new schedule.RecurrenceRule()
     // local
-    // rule.hour = 23
+    //rule.hour = 23
     // deloy
-    rule.hour = 3
-    rule.minute = 25
+    rule.hour = 16    
+    rule.minute = 59
     rule.second = 0
     schedule.scheduleJob(rule, () => {
-        //FlashSaleController.addLoopSale()
-        console.log('loop sale 3')
-    })
-
-    const rule3 = new schedule.RecurrenceRule()
-    // local
-    // rule.hour = 23
-    // deloy
-    rule3.hour = 0
-    rule3.minute = 14
-    rule3.second = 0
-    schedule.scheduleJob(rule3, () => {
-        //FlashSaleController.addLoopSale()
-        console.log('loop sale 0')
+        FlashSaleController.addLoopSale()
     })
 
     // Tạo một quy tắc định kỳ cho mỗi 3 tiếng

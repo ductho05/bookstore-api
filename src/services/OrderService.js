@@ -302,7 +302,7 @@ class OrderService {
 
     async insert(data) {
         
-        //console.log('qrdyiash', data, flashsales)
+        // console.log('qrdyiash1212', data)
 
         try {
             const vietnamTimeZone = 'Asia/Ho_Chi_Minh';

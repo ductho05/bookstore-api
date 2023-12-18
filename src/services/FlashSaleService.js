@@ -28,7 +28,11 @@ class FlashSaleService {
                 })
                 .exec();
             if (mount) {
+                //console.log("data: ", data, mount);
+                // chuyển chuổi sang số nguyên
+                mount = parseInt(mount);
                 if (data.sold_sale + mount > data.num_sale) {
+                    //console.log("data: da vao", data.sold_sale, mount,  data.num_sale);
                     return new ServiceResponse(
                         200,
                         Status.WARNING,
@@ -349,7 +353,7 @@ class FlashSaleService {
     async update(id, updateProduct, currentHourInVietnam, toDay) {
         console.log("da vao daycurrentHourInVietnam", currentHourInVietnam)
         try {
-            const result = await FlashSale.findByIdAndUpdate({ _id: id }, updateProduct).exec()
+            const result = await FlashSale.findByIdAndUpdate({ _id: id }, {...updateProduct, sold_sale: 0}).exec()
             
             await Product.findById(result.product).exec().then((product) => {
                     //console.log("da vao d12121ay", updateProduct)

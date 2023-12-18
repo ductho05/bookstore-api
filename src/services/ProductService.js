@@ -619,20 +619,39 @@ class ProductService {
         }
     }
 
-    async updateSold(filter, sold) {
+    async updateSold(filter, sold1) {
 
         try {
 
-            const result = await Product.findOne(filter).exec()
+            //console.log('filter212', filter, sold1, await Product.findById({ _id: filter._id }).exec())
+
+            const data1 = await Product.findById({ _id: filter._id }).exec()
+            //console.log('data1', data1.quantity)
+            const sold_pro = Number(data1.sold) + Number(sold1)
+            const quantity_pro = Number(data1.quantity) - Number(sold1)
+            const result = await Product.findByIdAndUpdate({ _id: filter._id }, {
+                // giá trị sold sẽ được cộng thêm sold1
+                sold: sold_pro,
+                // giá trị quantity sẽ được trừ đi sold1
+               quantity: quantity_pro },
+                // các trường còn lại giữ nguyên
+            ).exec()
+           
+
+            // tìm lại sản phẩm vừa được update
+            const result1=    await Product.findById({ _id: filter._id }).exec()
+            console.log('result', result1)
 
             if (result) {
+                // console.log('asdsfa', result)
 
-                const newSold = sold + result.sold
-                const newQuantity = result.quantity - sold
-                result.sold = newSold
-                result.quantity = newQuantity
+                // const newSold = sold + result.sold
+                // const newQuantity = result.quantity - sold
+                // result.sold = newSold
+                // result.quantity = newQuantity
 
-                result.save()
+                // await result.save()
+                               
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,

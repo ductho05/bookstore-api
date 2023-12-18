@@ -172,12 +172,10 @@ class FlashUserService {
     }
 
     async add(data) {
-        console.log(data);
+        console.log('data21212', data);
 
-        try {   
-      
-            const product = await FlashUser.create(data);
-              
+        try {         
+            const product = await FlashUser.create(data);              
             console.log(product);
             // Đặt múi giờ cho Việt Nam
             const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
@@ -196,10 +194,11 @@ class FlashUserService {
             
             if (product) {
                 const flashSale = await FlashSale.find({ _id: data.flashid, date_sale: toDay, point_sale: current_point_sale });
-                console.log(flashSale);
+                console.log('flashSale5rewf', flashSale);
                 
                 if (flashSale.length > 0) {
                     if (flashSale[0].sold_sale + data.mount <= flashSale[0].num_sale) {
+                        console.log('flashSale212313213', flashSale[0].sold_sale , data.mount, flashSale[0].num_sale);
                         flashSale[0].sold_sale += data.mount;
                         await FlashSale.findByIdAndUpdate(flashSale[0]._id, flashSale[0]).exec();
                     }  

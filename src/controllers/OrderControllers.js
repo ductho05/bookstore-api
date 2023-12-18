@@ -5,6 +5,7 @@ const Validator = require("../validator/Validator")
 const FlashSale = require("../models/FlashSale")
 const moment = require('moment-timezone');
 const { format } = require('date-fns-tz');
+const Product = require("../models/Product");
 class OrderController {
 
     async getAllOrderByUser(req, res) {
@@ -148,7 +149,7 @@ class OrderController {
 
         // console.log('adgjasd', req.body)
 
-            const { flashsales, ...data } = req.body;
+            const { flashsales, items, ...data } = req.body;
         // Đặt múi giờ cho Việt Nam
         const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
 
@@ -163,7 +164,7 @@ class OrderController {
         let current_point_sale = Math.floor(currentHourInVietnam/3);
         
         const { error, value } = Validator.orderValidator.validate(data)
-        console.log('flashsales1', flashsales, error)
+        console.log('flashsales1', flashsales, data, items)
         if (error) {
 
             res.status(400).json(new Response(
@@ -172,13 +173,42 @@ class OrderController {
             ))
         } else {
 
-            console.log('flashsales')
+            //console.log('flashsales132', items)     
+            // Kiểm tra product còn trong kho hay không
+            // Check trường hợp có cả product và flashsale
+            const listID = []   
+            items.forEach(item => {
+                if (!listID.includes(item.product._id)) {
+                    listID.push(item.product._id)
+                }
+                else {
+                    // tìm vị trí của item trong list
+                    const index = listID.indexOf(item.product._id)
+                    // cộng dồn số lượng
+                    items[index].quantity += item.quantity
+                }
+            })   
 
+            const ProductPromises = items.map(async (item) => {
+                const produc = await Product.find({ _id: item.product._id });
+                if (item.quantity > produc[0].quantity) {
+                    //console.log("da vao roi nha")
+                    return 'No' + produc[0]._id
+                }
+                else 
+                {
+                    return 'OK'
+                }
+            })
+
+
+            // Kiểm tra có đơn hàng có vượt quá chương trình FL
             const flashSalePromises = flashsales.map(async (item) => {
-                const flashSale = await FlashSale.find({ _id: item.flashid, date_sale: toDay, point_sale: current_point_sale });
+                
+                const flashSale = await FlashSale.find({ _id: item.flashid});
                 if (flashSale.length > 0) {
                     if (flashSale[0].sold_sale + item.mount > flashSale[0].num_sale) {
-                        return 'Not quantity' + flashSale[0].product
+                        return 'Not quantity' + flashSale[0]._id
                     }
                     else {
                         return 'OK'
@@ -186,23 +216,41 @@ class OrderController {
                 }
                 return 'OK'
             });
+
+          
+
+           
     
+            const productResults = await Promise.all(ProductPromises);
             const flashSaleResults = await Promise.all(flashSalePromises);
-            // 'Not quantity'
+            // // 'Not quantity'
     
-            console.log('flashSaleResults', flashSaleResults);
+            //console.log('flashSaleResults', productResults);
 
             if (flashSaleResults.filter(item => item.includes('Not quantity')).length > 0) {
                 console.log('da vao day roi ne')
                 const flashs = flashSaleResults.filter(item => item.includes('Not quantity')).map(item => item.split('Not quantity')[1])           
                 
                 return res.status(200).json(new Response(
-                    Status.ERROR401,
+                    Status.ERROR_FLASH_SALE,
                     'Số lượng sản phẩm trong flash sale không đủ',
                     flashs
                 ))
-            }            
-                console.log('value, da vao day', value)
+            }           
+
+            if (productResults.filter(item => item.includes('No')).length > 0) {
+                // console.log('da vao day roi ne')
+                const flashs = productResults.filter(item => item.includes('No')).map(item => item.split('No')[1])           
+                // console.log('flashs', flashs)
+                return res.status(200).json(new Response(
+                    Status.ERROR401,
+                    'Số lượng sản phẩm trong kho không đủ',
+                    flashs
+                ))
+            }
+
+           
+                // console.log('value, da vao day12312', value)
                 const response = await OrderService.insert(value)
 
                 res.status(response.statusCode).json(new Response(
@@ -262,10 +310,10 @@ class OrderController {
     }
 
     async createPaymentUrl(req, res) {
-        console.log('response122 da den 1', req)
+        // console.log('response122 da den 1', req)
         const response = await OrderService.createPaymentUrl(req)
 
-        console.log('response122 da den', response)
+        // console.log('response122 da den', response)
         res.status(response.statusCode).json(new Response(
             response.status,
             response.message,
