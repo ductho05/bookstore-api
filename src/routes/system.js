@@ -7,7 +7,7 @@ router.post("/insert", authorization, systemController.insertSystem);
 
 const schedule = require('node-schedule')
 const rule = new schedule.RecurrenceRule()
-rule.hour = 0
+rule.hour = 17
 rule.minute = 0
 rule.second = 0
 schedule.scheduleJob(rule, () => {
