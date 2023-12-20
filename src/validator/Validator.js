@@ -142,8 +142,8 @@ class Validator {
         title: Joi.string().trim().min(3).max(255).required(),
         author: Joi.string().trim().min(3).max(255).required(),
         published_date: Joi.string().pattern(new RegExp(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)).required(),
-        price: Joi.number().min(1000).required(),
-        old_price: Joi.number().min(1000).required(),
+        price: Joi.number().min(1).required(),
+        old_price: Joi.number().min(1).required(),
         desciption: Joi.string().trim().min(5).required(),
         quantity: Joi.number().min(1).required(),
         categoryId: Joi.string().trim().min(1).required()
@@ -159,14 +159,14 @@ class Validator {
         title: Joi.string().trim().min(3).max(255),
         author: Joi.string().trim().min(3).max(255),
         published_date: Joi.string().pattern(new RegExp(/([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/)),
-        price: Joi.number().min(1000),
-        old_price: Joi.number().min(1000),
+        price: Joi.number().min(1),
+        old_price: Joi.number().min(1),
         desciption: Joi.string().trim().min(5),
         quantity: Joi.number().min(1),
         categoryId: Joi.string().trim().min(1),
         list_Images: Joi.string().trim().min(1),
         images: Joi.string().pattern(new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/)),
-        containprice: Joi.number().min(1000),
+        containprice: Joi.number().min(1),
         flashsaleprice: Joi.number().min(0),
         status_sell: Joi.boolean()
     })
