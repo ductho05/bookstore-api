@@ -44,7 +44,7 @@ class SystemService {
             const system = await System.findOne({ isStatus: true });
             if (system.end < date) {
                 system.isStatus = false;
-                system.save();
+                await system.save();
             }
             return new ServiceResponse(
                 200,
