@@ -542,13 +542,13 @@ class FlashSaleService {
             //let toDay = currentDate.toISOString().slice(0, 10);
             //let inputDay = inputDate.toISOString().slice(0, 10);
             // Tìm tất cả các Flash Sale có is_loop = true và date_sale = hôm nay
-            console.log("toDay: ", toDay);
+            // console.log("toDay: ", toDay);
             const loopSales = await FlashSale.find({ is_loop: true, date_sale: toDay });
-            console.log("loopSales: ", loopSales);
+           // console.log("loopSales: ", loopSales);
             // Xóa các Flash Sale đã hết hạn
             //console.log("chua xoa", loopSales);
             for (const sale of loopSales) {
-                console.log("sale: ", sale);
+                //console.log("sale: ", sale);
                 // thêm vào ngày hôm sau       
                 sale.is_loop = false;
                 await sale.save();
@@ -566,6 +566,7 @@ class FlashSaleService {
                     is_loop: true,
                 });
                 await newSale.save();
+                console.log("dang chạy thêm lặp...", toDay)
             }
             return new ServiceResponse(
                 200,
@@ -582,11 +583,11 @@ class FlashSaleService {
     }
 
     async checkAndUpdatePrice() {
-        console.log("da vao day")
+        //console.log("da vao day")
         try {
             // Đặt múi giờ cho Việt Nam
             const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
-            console.log("da vao day")
+            //console.log("da vao day")
             // Lấy thời gian hiện tại ở Việt Nam
             const currentTimeInVietnam = moment().tz(vietnamTimeZone);
             // Lấy số giờ hiện tại
@@ -594,24 +595,24 @@ class FlashSaleService {
 
             // tìm các flash sale có ngày và khung giờ hiện tại
             const currentDate = new Date();
-            console.log("da vao day")
+            //console.log("da vao day")
             const yesterday = subDays(currentDate, 1);
-            console.log("yesterday: ", yesterday);
+          
             let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
             // lấy giá trị ngày hôm trước
             let yes = format(yesterday, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
 
             let current_point_sale = Math.floor(currentHourInVietnam / 3);
-            console.log("toDay: ", toDay, yes);
+           // console.log("toDay: ", toDay, yes);
             // ngày hôm trước
 
-
+           
             // sửa giá của sản phẩm trong khung giờ đã qua
             const flashSales1 = await FlashSale.find(current_point_sale == 0 ? { date_sale: yes, point_sale: 7 } : { date_sale: toDay, point_sale: current_point_sale - 1 });
             flashSales1.forEach(async (flashSale) => {
                 if (flashSale.product) {
                 await Product.findById(flashSale.product).exec().then((product) => {
-                    console.log("da vao day", product)
+                   // console.log("da vao day", product)
                     //product.sold +=  flashSale.sold_sale; // update đã bán
                     product.price = product.containprice; // lấy lại giá ban đầu
                     product.containprice = 1;
@@ -624,9 +625,10 @@ class FlashSaleService {
             const flashSales = await FlashSale.find({ date_sale: toDay, point_sale: current_point_sale });
             flashSales.forEach(async (flashSale) => {
             //console.log("flashSale: ", flashSale);
-            if (flashSale.product) {            
+            if (flashSale.product) {  
+                 console.log("Update giá flashsale dang chạy>>>: bây giờ là ", currentHourInVietnam, toDay);
                 await Product.findById(flashSale.product).exec().then((product) => {
-                console.log("da vao day")
+                //console.log("da vao day")
                 product.containprice = product.price; // chứa giá ban đầu
                 product.price = product.old_price * (100 - flashSale.current_sale)/100; // giá mới trong flashsale
                 product.save();
