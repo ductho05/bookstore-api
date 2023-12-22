@@ -35,7 +35,12 @@ class SystemService {
     async checkStatus(date) {
 
         try {
-
+          // Đặt múi giờ cho Việt Nam
+            const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
+            // Lấy thời gian hiện tại ở Việt Nam
+            const currentTimeInVietnam = moment().tz(vietnamTimeZone);
+            const date = currentTimeInVietnam.format('YYYY-MM-DD');
+            console.log("đã chạy vô kiểm tra kpi", date)
             const system = await System.findOne({ isStatus: true });
             if (system.end < date) {
                 system.isStatus = false;
