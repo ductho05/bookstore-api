@@ -618,20 +618,23 @@ class FlashSaleService {
                     product.containprice = 1;
                     await product.save();
                 });
+                console.log("sau khi update -  của sản phẩm trong khung giờ đã qua:", await Product.findById(flashSale.product).exec());
                 }
             });
 
             // Update lại giá của sản phẩm trong khung giờ hiện tại
             const flashSales = await FlashSale.find({ date_sale: toDay, point_sale: current_point_sale });
             flashSales.forEach(async (flashSale) => {
-            //console.log("flashSale: ", flashSale);
-            if (flashSale.product) {  
-                await Product.findById(flashSale.product).exec().then((product) => {
-                //console.log("da vao day")
-                product.containprice = product.price; // chứa giá ban đầu
-                product.price = product.old_price * (100 - flashSale.current_sale)/100; // giá mới trong flashsale
-                await product.save();
-            });}
+                //console.log("flashSale: ", flashSale);
+                if (flashSale.product) {  
+                    await Product.findById(flashSale.product).exec().then((product) => {
+                        //console.log("da vao day")
+                        product.containprice = product.price; // chứa giá ban đầu
+                        product.price = product.old_price * (100 - flashSale.current_sale)/100; // giá mới trong flashsale
+                        await product.save();
+                    });
+                    console.log("sau khi update -  Update lại giá của sản phẩm trong khung giờ hiện tại:", await Product.findById(flashSale.product).exec());
+                }
             });
             const listUsers = await User.find().exec()
             let description = "Ưu đãi chương trình TA BookStore Flash Sale dành cho tất cả khách hàng. Xem ngay!"
