@@ -172,11 +172,11 @@ class FlashUserService {
     }
 
     async add(data) {
-        console.log('data21212', data);
+      //  console.log('data21212', data);
 
         try {         
             const product = await FlashUser.create(data);              
-            console.log(product);
+          //  console.log(product);
             // Đặt múi giờ cho Việt Nam
             const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
 
@@ -190,15 +190,15 @@ class FlashUserService {
             let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
             let current_point_sale = Math.floor(currentHourInVietnam/3);
             
-            console.log(toDay, current_point_sale);
+          //  console.log(toDay, current_point_sale);
             
             if (product) {
-                const flashSale = await FlashSale.find({ _id: data.flashid, date_sale: toDay, point_sale: current_point_sale });
-                console.log('flashSale5rewf', flashSale);
+                const flashSale = await FlashSale.find({ _id: data.flashid });
+              //  console.log('flashSale5rewf', flashSale);
                 
                 if (flashSale.length > 0) {
                     if (flashSale[0].sold_sale + data.mount <= flashSale[0].num_sale) {
-                        console.log('flashSale212313213', flashSale[0].sold_sale , data.mount, flashSale[0].num_sale);
+                      //  console.log('flashSale212313213', flashSale[0].sold_sale , data.mount, flashSale[0].num_sale);
                         flashSale[0].sold_sale += data.mount;
                         await FlashSale.findByIdAndUpdate(flashSale[0]._id, flashSale[0]).exec();
                     }  
@@ -208,7 +208,8 @@ class FlashUserService {
                             Status.ERROR,
                             Messages.INSERT_DATA_ERROR
                         )
-                    }                  
+                    }    
+                  //  console.log("doremon ",  await FlashSale.find({ _id: data.flashid }))           
                 }            
 
                 return new ServiceResponse(
@@ -226,7 +227,7 @@ class FlashUserService {
                 )
             }    
         } catch (err) {
-            console.log('afdafdas', err);
+          //  console.log('afdafdas', err);
 
             return new ServiceResponse(
                 500,

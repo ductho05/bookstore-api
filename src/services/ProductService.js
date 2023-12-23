@@ -11,7 +11,7 @@ class ProductService {
 
         try {
 
-            console.log(sort)
+           // console.log(sort)
             let customSort = { "updatedAt": -1 }
             if (sort) {
                 if (filter == "price") {
@@ -128,7 +128,7 @@ class ProductService {
             )
         } catch (err) {
 
-            console.log(err)
+           // console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -497,7 +497,7 @@ class ProductService {
 
         } catch (err) {
 
-            console.log(err)
+           // console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -524,7 +524,7 @@ class ProductService {
 
         } catch (err) {
 
-            console.log(err)
+           // console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -584,7 +584,7 @@ class ProductService {
 
         } catch (err) {
 
-            console.log(err)
+           // console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -618,7 +618,7 @@ class ProductService {
 
         } catch (err) {
 
-            console.log(err)
+           // console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -627,48 +627,41 @@ class ProductService {
         }
     }
 
-    async updateSold(filter, sold1) {
+  
+
+    async updateSold(req) {
+        const {list} = req
 
         try {
 
-            //console.log('filter212', filter, sold1, await Product.findById({ _id: filter._id }).exec())
+            //console.log('list', list)
+          
+            async function updatePrices() {
+                for (const item of list) {
+                    const result = await Product.findById({ _id: item.id }).exec();
+                    if (result) {
+                        result.sold = result.sold + item.sold;
+                        result.quantity = result.quantity - item.sold;
+                        await result.save();
+                        //console.log('newList', result, await Product.findById({ _id: item.id }).exec());
+                    }
+                }
+            }
 
-            const data1 = await Product.findById({ _id: filter._id }).exec()
-            //console.log('data1', data1.quantity)
-            const sold_pro = Number(data1.sold) + Number(sold1)
-            const quantity_pro = Number(data1.quantity) - Number(sold1)
-            const result = await Product.findByIdAndUpdate({ _id: filter._id }, {
-                // giá trị sold sẽ được cộng thêm sold1
-                sold: sold_pro,
-                // giá trị quantity sẽ được trừ đi sold1
-               quantity: quantity_pro },
-                // các trường còn lại giữ nguyên
-            ).exec()
-           
+            updatePrices();            
 
-            // tìm lại sản phẩm vừa được update
-            const result1=    await Product.findById({ _id: filter._id }).exec()
-            console.log('result', result1)
-
-            if (result) {
-                // console.log('asdsfa', result)
-
-                // const newSold = sold + result.sold
-                // const newQuantity = result.quantity - sold
-                // result.sold = newSold
-                // result.quantity = newQuantity
-
-                // await result.save()
-                               
+       
+            if (true) {       
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,
-                    Messages.UPDATE_DATA_SUCCESS
+                    Messages.UPDATE_DATA_SUCCESS,
+                   // newList
                 )
             } else {
 
                 return new ServiceResponse(
-                    400,
+                    200,
                     Status.ERROR,
                     Messages.UPDATE_DATA_ERROR
                 )
@@ -676,7 +669,7 @@ class ProductService {
 
         } catch (err) {
 
-            console.log(err)
+           console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -709,7 +702,7 @@ class ProductService {
 
         } catch (err) {
 
-            console.log(err)
+           // console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,

@@ -71,7 +71,7 @@ class SystemService {
 
 
 
-            console.log('system, ', system)
+           // console.log('system, ', system)
 
             if (system.type == "week") {
                 // giá trị ngày thứ 2 tuần

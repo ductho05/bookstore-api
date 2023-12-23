@@ -303,25 +303,31 @@ class ProductControllers {
 
     async updateSoldProduct(req, res) {
 
-        const id = req.params.id
-        const { error, value } = Validator.soldValidator.validate(req.body)
+        //const id = req.params.id
+        console.log("value1", req.body)
+       // const { error, value } = Validator.soldValidator.validate(...req.body)
+       // console.log("value2", value)   
+      
+ 
+//         if (error) {
 
-        if (error) {
+//             console.log(error)
+//             res.status(400).json(new Response(
+//                 Status.ERROR,
+//                 error.message
+//             ))
+//         } else {
 
-            res.status(400).json(new Response(
-                Status.ERROR,
-                error.message
-            ))
-        } else {
-
-            const sold = value.sold
-            const response = await ProductService.updateSold({ _id: id }, sold)
+//             const sold = value.sold
+//             console.log("sold", sold)
+           const response = await ProductService.updateSold(req.body)
 
             res.status(response.statusCode).json(new Response(
                 response.status,
-                response.message
+                response.message,
+              
             ))
-        }
+        // }
     }
 
     // Xóa dữ liệu sách theo id

@@ -71,7 +71,7 @@ class FlashUserControllers {
 
         //console.log('req.body', req)
         const data = req.body 
-        console.log('àdcsafsdf', data)
+        // console.log('àdcsafsdf', data)
 
         const response = await FlashUserService.add(data)
 

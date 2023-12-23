@@ -170,7 +170,7 @@ class FlashSaleControllers {
 
 
     async checkAndUpdatePrice(req, res) {
-        console.log("checkAndUpdatePrice")            
+        // console.log("checkAndUpdatePrice")            
         await FlashSaleService.checkAndUpdatePrice()
     
             // res.status(response.statusCode).json(new Response(

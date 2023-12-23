@@ -49,7 +49,7 @@ class SystemControllers {
 
         const response = await SystemService.insertSystem(req.body)
 
-        console.log("response", response)
+        // console.log("response", response)
         res.status(response.statusCode).json(new Response(
             response.status,
             response.message,        

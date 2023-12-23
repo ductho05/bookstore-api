@@ -450,7 +450,9 @@ class OrderService {
             let signData = querystring.stringify(vnp_Params, { encode: false });
             let crypto = require("crypto");
             let hmac = crypto.createHmac("sha512", secretKey);
-            let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+            // let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+            const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
+
             vnp_Params['vnp_SecureHash'] = signed;
             vnpUrl += '?' + querystring.stringify(vnp_Params, { encode: false });
 
@@ -491,7 +493,10 @@ class OrderService {
             let signData = querystring.stringify(vnp_Params, { encode: false });
             let crypto = require("crypto");
             let hmac = crypto.createHmac("sha512", secretKey);
-            let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+            // let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
+            const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
+
+            console.log("day ne ddd", signed)
             res.redirect(`${constants.urlui}/checkout?signed=${req.query.vnp_TxnRef}&status=${req.query.vnp_ResponseCode}`)
             // return new ServiceResponse(
             //     200,

@@ -116,7 +116,7 @@ class CategoryService {
 
         } catch (err) {
 
-            console.log(err)
+            // console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,

@@ -5,7 +5,7 @@ const connect = (io) => {
     let listUserConnect = []
 
     io.on('connection', (socket) => {
-        console.log('A new user connected ', socket.id)
+        // console.log('A new user connected ', socket.id)
 
         socket.on('save-socket', async (userId) => {
             listUserConnect.push({
@@ -15,14 +15,14 @@ const connect = (io) => {
         })
 
         socket.on('disconnect', () => {
-            console.log('User disconnected', socket.id)
+            // console.log('User disconnected', socket.id)
             const newListUserConnect = listUserConnect.filter(user => user.socketId != socket.id)
             listUserConnect = [...newListUserConnect]
         })
 
         socket.on('send-notification', ({ type, userId, notification }) => {
 
-            console.log("Gửi thông báo")
+            // console.log("Gửi thông báo")
 
             io.emit('response-notification', { type, userId, notification })
         })
