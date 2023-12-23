@@ -19,7 +19,9 @@ if (isRun == true) {
     // local
     //rule.hour = 23
     // deloy
-    rule.hour = 16
+    // Đặt múi giờ cho múi giờ Hồ Chí Minh (GMT+7)
+    rule.tz = 'Asia/Ho_Chi_Minh';
+    rule.hour = 23
     rule.minute = 58
     rule.second = 0
     schedule.scheduleJob(rule, () => {
@@ -32,7 +34,8 @@ if (isRun == true) {
     // local
     // rule1.hour = [0, 3, 6,  9,  12,  15,  18,  21]
     // deloy
-    rule1.hour = [2, 5, 8, 11, 14, 17, 20, 23]
+    rule1.tz = 'Asia/Ho_Chi_Minh';
+    rule1.hour = [0, 3, 6, 9, 12, 15, 18, 21]
     rule1.minute = 0; // Các phút bạn muốn kiểm tra
     rule1.second = 0
 
