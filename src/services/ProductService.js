@@ -95,24 +95,24 @@ class ProductService {
             }
 
             const data = await Product
-                .find(category ? { categoryId: category } : {})
-                .find(title ? { title: new RegExp(title, "i") } : {})
+                .find(category ? { $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }, { categoryId: category }] } : {})
+                .find(title ? { $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }, { title: new RegExp(title, "i") }] } : {})
                 .find({ images: { $ne: null } })
-                .find(rate ? { rate } : {})
-                .find(minPrice ? { price: { $gte: minPrice } } : {})
-                .find(minPrice && maxPrice ? { price: { $gte: minPrice, $lte: maxPrice } } : {})
+                .find(rate ? { $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }, { rate }] } : {})
+                .find(minPrice ? { $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }, { price: { $gte: minPrice } }] } : {})
+                .find(minPrice && maxPrice ? { $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }, { price: { $gte: minPrice, $lte: maxPrice } }] } : {})
                 .populate("categoryId")
                 .skip(start)
                 .limit(end)
                 .sort(customSort)
 
             const quantity = await Product
-                .find(category ? { categoryId: category } : {})
-                .find(title ? { title: new RegExp(title, "i") } : {})
+                .find(category ? { $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }, { categoryId: category }] } : {})
+                .find(title ? { $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }, { title: new RegExp(title, "i") }] } : {})
                 .find({ images: { $ne: null } })
-                .find(rate ? { rate } : {})
-                .find(minPrice ? { price: { $gte: minPrice } } : {})
-                .find(minPrice && maxPrice ? { price: { $gte: minPrice, $lte: maxPrice } } : {})
+                .find(rate ? { $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }, { rate }] } : {})
+                .find(minPrice ? { $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }, { price: { $gte: minPrice } }] } : {})
+                .find(minPrice && maxPrice ? { $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }, { price: { $gte: minPrice, $lte: maxPrice } }] } : {})
                 .countDocuments()
 
             const result = {
@@ -170,15 +170,16 @@ class ProductService {
 
         try {
 
-            const data = await Product.find()
-
-            const newData = data.sort((a, b) => b.sold - a.sold).splice(0, 6)
+            const data = await Product
+                .find({ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] })
+                .limit(6)
+                .sort({ "sold": -1 })
 
             return new ServiceResponse(
                 200,
                 Status.SUCCESS,
                 Messages.GET_DATA_SUCCESS,
-                newData
+                data
             )
         } catch (err) {
 
@@ -194,7 +195,7 @@ class ProductService {
 
         try {
 
-            const data = await Product.findById(id)
+            const data = await Product.findOne({ $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }, { _id: id }] })
                 .populate("categoryId")
                 .exec();
 
@@ -292,7 +293,7 @@ class ProductService {
 
         try {
 
-            const data = await Product.find({ title: new RegExp(title, "i") })
+            const data = await Product.find({ $and: [{ title: new RegExp(title, "i") }, { $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }] })
                 .populate("categoryId")
                 .limit(num)
                 .exec()
@@ -319,7 +320,10 @@ class ProductService {
         try {
 
             const data = await Product.find({
-                author: new RegExp(author, "i"),
+                $and: [
+                    { $or: [{ status_sell: { $exists: false } }, { status_sell: true }] },
+                    { author: new RegExp(author, "i") }
+                ]
             }).populate("categoryId")
 
             return new ServiceResponse(
@@ -344,7 +348,10 @@ class ProductService {
         try {
 
             const data = await Product.find({
-                published_date: { $gte: start, $lte: end },
+                $and: [
+                    { published_date: { $gte: start, $lte: end } },
+                    { $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }
+                ]
             }).populate("categoryId")
 
             return new ServiceResponse(
@@ -368,7 +375,7 @@ class ProductService {
 
         try {
 
-            const data = await Product.find()
+            const data = await Product.find({ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] },)
                 .populate("categoryId")
                 .sort({
                     published_date: -1,
@@ -396,7 +403,7 @@ class ProductService {
 
         try {
 
-            const data = await Product.find()
+            const data = await Product.find({ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] },)
                 .sort({
                     price: 1,
                 })
@@ -424,7 +431,7 @@ class ProductService {
 
         try {
 
-            const data = await Product.find()
+            const data = await Product.find({ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] },)
                 .populate("categoryId")
                 .sort({
                     sold: -1,
@@ -454,7 +461,9 @@ class ProductService {
         try {
 
             const data = await Product.find({
-                price: { $gte: start, $lte: end },
+                $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] },
+                { price: { $gte: start, $lte: end } }
+                ]
             })
                 .sort({ price: sort })
                 .populate("categoryId")
@@ -481,7 +490,9 @@ class ProductService {
         try {
 
             const category = await Category.findOne({
-                name: "Lịch Sử Thế Giới",
+                $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] },
+                { name: "Lịch Sử Thế Giới" }
+                ]
             }).exec()
 
             const data = await Product.find({
@@ -510,7 +521,7 @@ class ProductService {
 
         try {
 
-            const data = await Product.find({ categoryId: id })
+            const data = await Product.find({ $and: [{ $or: [{ status_sell: { $exists: false } }, { status_sell: true }] }, { categoryId: id }] })
                 .limit(limit)
                 .populate("categoryId")
                 .exec()
@@ -601,11 +612,12 @@ class ProductService {
 
             if (result) {
 
+                const product = await Product.findOne({ _id: result._id }).exec()
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,
                     Messages.UPDATE_DATA_SUCCESS,
-                    result
+                    product
                 )
             } else {
 
@@ -631,11 +643,7 @@ class ProductService {
 
     async updateSold(req) {
         const {list} = req
-
-        try {
-
-            //console.log('list', list)
-          
+        try {       
             async function updatePrices() {
                 for (const item of list) {
                     const result = await Product.findById({ _id: item.id }).exec();

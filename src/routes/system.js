@@ -13,9 +13,10 @@ if (constants.deploy == true) {
     //rule.hour = 0
     // deloy
     rule.hour = 17
-    rule.minute = 0
+    rule.minute = 5
     rule.second = 0
     schedule.scheduleJob(rule, () => {
+          console.log("chuan bi chay check kpi")
         systemController.checkStatus();
     })
 }

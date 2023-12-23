@@ -20,9 +20,10 @@ if (isRun == true) {
     //rule.hour = 23
     // deloy
     rule.hour = 16
-    rule.minute = 59
+    rule.minute = 58
     rule.second = 0
     schedule.scheduleJob(rule, () => {
+        console.log("chuan bi chay them lap")
         FlashSaleController.addLoopSale()
     })
 
@@ -37,6 +38,7 @@ if (isRun == true) {
 
     // Lên lịch kiểm tra giá với quy tắc định kỳ
     schedule.scheduleJob(rule1, () => {
+        console.log("chuan bi chay update gia")
         FlashSaleController.checkAndUpdatePrice();
     });
 }

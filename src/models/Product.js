@@ -14,7 +14,7 @@ const Product = new Schema({
     status: { type: String, require: true, default: "Còn hàng" },
     images: { type: String },
     list_Images: { type: String },
-    status_sell: { type: Boolean },
+    status_sell: { type: Boolean, default: true },
     quantity: { type: Number },
     categoryId: { type: mongoose.Schema.Types.String, ref: "Category" },
 });
