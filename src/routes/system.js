@@ -14,7 +14,7 @@ if (constants.deploy == true) {
     // deloy
     rule.tz = 'Asia/Ho_Chi_Minh';
     rule.hour = 17
-    rule.minute = 15
+    rule.minute = 35
     rule.second = 0
     schedule.scheduleJob(rule, () => {
         console.log("chuan bi chay check kpi")
