@@ -16,6 +16,7 @@ if (constants.deploy == true) {
     rule.minute = 0
     rule.second = 0
     schedule.scheduleJob(rule, () => {
+          console.log("chuan bi chay check kpi")
         systemController.checkStatus();
     })
 }
