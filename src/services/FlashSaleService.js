@@ -65,8 +65,16 @@ class FlashSaleService {
 
             const currentDate = new Date();
 
+            // Đặt múi giờ cho Việt Nam
+            const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
+            //console.log("da vao day")
+            // Lấy thời gian hiện tại ở Việt Nam
+            const currentTimeInVietnam = moment().tz(vietnamTimeZone);
+            // Lấy số giờ hiện tại
+            const currentHourInVietnam = currentTimeInVietnam.get('hours');
+            let current_point_sale = Math.floor(currentHourInVietnam / 3);
 
-            let current_point_sale = Math.floor(new Date().getHours() / 3);
+            //let current_point_sale = Math.floor(new Date().getHours() / 3);
             let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
 
             console.log("toDayflash: ", toDay, current_point_sale);
