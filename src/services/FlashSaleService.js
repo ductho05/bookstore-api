@@ -69,7 +69,7 @@ class FlashSaleService {
             let current_point_sale = Math.floor(new Date().getHours() / 3);
             let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
 
-            // //console.log("toDay: ", toDay, current_point_sale);
+            console.log("toDayflash: ", toDay, current_point_sale);
             // Lấy danh sách flash sale
             const flashSales = await FlashSale
 
