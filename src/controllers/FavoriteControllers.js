@@ -7,6 +7,7 @@ class FavoriteControllers {
 
   // Kiểm tra sản phẩm đã được thêm vào yêu thích hay chưa
   async checkFavorite(req, res) {
+    console.log(req.query.userid, req.query.productid);
     try {
       const data = await Favorite.findOne({
         userid: req.query.userid,
@@ -38,7 +39,19 @@ class FavoriteControllers {
     try {
       const data = await Favorite.find(
         userid ? { userid: userid } : productid ? { productid: productid } : {},
-      ).exec();
+      ).populate({
+        path: 'productid',
+        populate: {
+            path: 'categoryId',
+            model: 'Category' // Tên của mô hình Category
+        }
+    })
+    .populate({
+        path: 'userid',
+    })
+      
+      
+      .exec();
       if (data) {
         resObj.status = "OK";
         resObj.message = "Found comment successfully";

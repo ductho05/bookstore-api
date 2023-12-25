@@ -65,8 +65,16 @@ class FlashSaleService {
 
             const currentDate = new Date();
 
+            // Đặt múi giờ cho Việt Nam
+            const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
+            //console.log("da vao day")
+            // Lấy thời gian hiện tại ở Việt Nam
+            const currentTimeInVietnam = moment().tz(vietnamTimeZone);
+            // Lấy số giờ hiện tại
+            const currentHourInVietnam = currentTimeInVietnam.get('hours');
+            let current_point_sale = Math.floor(currentHourInVietnam / 3);
 
-            let current_point_sale = Math.floor(new Date().getHours() / 3);
+            //let current_point_sale = Math.floor(new Date().getHours() / 3);
             let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
 
             // //console.log("toDay: ", toDay, current_point_sale);
@@ -191,6 +199,8 @@ class FlashSaleService {
                 }
             }
 
+            console.log("flashSalesWithCategory: ", flashSalesWithCategory);
+
             return new ServiceResponse(
                 200,
                 Status.SUCCESS,
@@ -274,15 +284,15 @@ class FlashSaleService {
                         product.save();
                     });
                 }
-                // Trong khung giờ tương lai
-                else {
-                    await Product.findById(body.product).exec().then((product) => {
-                        // lưu giá ban đầu
-                        product.containprice = 1;
-                        //product.price = product.old_price * (100 - req.body.current_sale)/100;
-                        product.save();
-                    });
-                }
+                // // Trong khung giờ tương lai
+                // else {
+                //     await Product.findById(body.product).exec().then((product) => {
+                //         // lưu giá ban đầu
+                //         product.containprice = 1;
+                //         //product.price = product.old_price * (100 - req.body.current_sale)/100;
+                //         product.save();
+                //     });
+                // }
                 // Thêm bản ghi mới FlashSale
                 const data = await FlashSale.create(body);
 

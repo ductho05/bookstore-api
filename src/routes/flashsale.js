@@ -37,6 +37,7 @@ if (isRun == true) {
     rule1.tz = 'Asia/Ho_Chi_Minh';
     rule1.hour = [0, 3, 6, 9, 12, 15, 18, 21]
     rule1.minute = 0; // Các phút bạn muốn kiểm tra
+    
     rule1.second = 0
 
     // Lên lịch kiểm tra giá với quy tắc định kỳ
