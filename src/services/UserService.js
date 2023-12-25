@@ -437,7 +437,8 @@ class UserService {
 
             if (userUpdate) {
 
-                const userDTO = UserDTO.mapUserToUserDTO(userUpdate)
+                const updatedUser = await User.findOne({ _id: userUpdate._id })
+                const userDTO = UserDTO.mapUserToUserDTO(updatedUser)
 
                 return new ServiceResponse(
                     200,
@@ -454,6 +455,7 @@ class UserService {
             }
 
         } catch (err) {
+            console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
