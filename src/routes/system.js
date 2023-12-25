@@ -12,10 +12,12 @@ if (constants.deploy == true) {
    // local
     //rule.hour = 0
     // deloy
-    rule.hour = 17
-    rule.minute = 0
+    rule.tz = 'Asia/Ho_Chi_Minh';
+    rule.hour = 0
+    rule.minute = 2
     rule.second = 0
     schedule.scheduleJob(rule, () => {
+        console.log("chuan bi chay check kpi")
         systemController.checkStatus();
     })
 }

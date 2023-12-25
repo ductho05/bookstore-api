@@ -58,7 +58,7 @@ class FlashSaleControllers {
         var enddate = req.query.enddate;
 
         const response = await FlashSaleService.getProduct(categoryId, start, end, sort, filter, productId, date, point, enddate)
-
+console.log("flashSalesWithCategory: ", response);
         res.status(response.statusCode).json(new Response(
             response.status,
             response.message,
@@ -170,7 +170,7 @@ class FlashSaleControllers {
 
 
     async checkAndUpdatePrice(req, res) {
-        console.log("checkAndUpdatePrice")            
+        // console.log("checkAndUpdatePrice")            
         await FlashSaleService.checkAndUpdatePrice()
     
             // res.status(response.statusCode).json(new Response(

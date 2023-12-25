@@ -164,7 +164,7 @@ class OrderController {
         let current_point_sale = Math.floor(currentHourInVietnam/3);
         
         const { error, value } = Validator.orderValidator.validate(data)
-        console.log('flashsales1', flashsales, data, items)
+        // console.log('flashsales1', flashsales, data, items)
         if (error) {
 
             res.status(400).json(new Response(
@@ -228,7 +228,7 @@ class OrderController {
             //console.log('flashSaleResults', productResults);
 
             if (flashSaleResults.filter(item => item.includes('Not quantity')).length > 0) {
-                console.log('da vao day roi ne')
+                // console.log('da vao day roi ne')
                 const flashs = flashSaleResults.filter(item => item.includes('Not quantity')).map(item => item.split('Not quantity')[1])           
                 
                 return res.status(200).json(new Response(

@@ -129,7 +129,7 @@ class Validator {
 
     orderItemValidator = Joi.object({
         quantity: Joi.number().min(1).required(),
-        price: Joi.number().min(1000).required(),
+        price: Joi.number().min(1).required(),
         order: Joi.string().pattern(new RegExp(/^[a-fA-F0-9]{24}$/)).required(),
         product: Joi.string().pattern(new RegExp(/^[a-fA-F0-9]{24}$/)).required()
     })
@@ -183,7 +183,8 @@ class Validator {
     })
 
     soldValidator = Joi.object({
-        sold: Joi.number().min(1).max(1000).required()
+        sold: Joi.number().min(1).max(1000).required(),
+        id: Joi.string().pattern(new RegExp(/^[a-fA-F0-9]{24}$/)).required()
     })
 }
 
