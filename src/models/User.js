@@ -16,6 +16,7 @@ const User = new Schema({
     facebookId: { type: String, require: true },
     sw_id: { type: Object },
     socket_id: { type: String },
+    isLock: { type: Boolean, default: false },
     order: { type: mongoose.Schema.Types.ObjectId, ref: "Order" },
     cart: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" }
 }, {

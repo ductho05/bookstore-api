@@ -54,6 +54,7 @@ class Validator {
             new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
         ),
         isManager: Joi.boolean(),
+        isLock: Joi.boolean()
     })
 
     categoryValidator = Joi.object({
@@ -77,7 +78,7 @@ class Validator {
     notificationValidator = Joi.object({
         title: Joi.string().trim().min(1).required(),
         description: Joi.string().trim().min(1).required(),
-        image: Joi.string().pattern(new RegExp(/(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/)).required(),
+        image: Joi.string().required(),
         url: Joi.string().pattern(new RegExp(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}/)).required(),
         user: Joi.string().pattern(new RegExp(/^[a-fA-F0-9]{24}$/))
     })
