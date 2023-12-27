@@ -1,4 +1,4 @@
-const isDeploy = false
+const isDeploy = true
 
 class Constants {
     TOKEN_KEY = 'ductho2002';
