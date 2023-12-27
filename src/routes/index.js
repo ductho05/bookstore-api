@@ -12,6 +12,7 @@ const favoriteRouter = require('./favorite')
 const webPushRouter = require('./webpush')
 const flashuserRouter = require('./flashuser')
 const systemRouter = require('./system')
+const voucherRouter = require('./voucher')
 
 function route(app) {
   app.use("/bookstore/api/v1/orders", orderRouter);
@@ -26,7 +27,8 @@ function route(app) {
   app.use("/bookstore/api/v1/favorites", favoriteRouter);
   app.use("/bookstore/api/v1/webpush", webPushRouter)
   app.use("/bookstore/api/v1/flashusers", flashuserRouter);
-  app.use("/bookstore/api/v1/systems", systemRouter);
+  app.use("/bookstore/api/v1/systems", systemRouter); 
+  app.use("/bookstore/api/v1/vouchers", voucherRouter);
 }
 
 module.exports = route;

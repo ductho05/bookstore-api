@@ -199,6 +199,8 @@ class FlashSaleService {
                 }
             }
 
+            console.log("flashSalesWithCategory: ", flashSalesWithCategory);
+
             return new ServiceResponse(
                 200,
                 Status.SUCCESS,
@@ -282,15 +284,15 @@ class FlashSaleService {
                         product.save();
                     });
                 }
-                // Trong khung giờ tương lai
-                else {
-                    await Product.findById(body.product).exec().then((product) => {
-                        // lưu giá ban đầu
-                        product.containprice = 1;
-                        //product.price = product.old_price * (100 - req.body.current_sale)/100;
-                        product.save();
-                    });
-                }
+                // // Trong khung giờ tương lai
+                // else {
+                //     await Product.findById(body.product).exec().then((product) => {
+                //         // lưu giá ban đầu
+                //         product.containprice = 1;
+                //         //product.price = product.old_price * (100 - req.body.current_sale)/100;
+                //         product.save();
+                //     });
+                // }
                 // Thêm bản ghi mới FlashSale
                 const data = await FlashSale.create(body);
 
