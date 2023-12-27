@@ -7,9 +7,9 @@ class CategoryControllers {
 
     async getAllCategory(req, res) {
 
-        const { filter, limit } = req.query;
+        const { filter, limit, lock } = req.query;
 
-        const response = await CategoryService.getAll(filter, limit)
+        const response = await CategoryService.getAll(filter, limit, lock)
 
         res.status(response.statusCode).json(new Response(
             response.status,
@@ -17,6 +17,7 @@ class CategoryControllers {
             response.data
         ))
     }
+
 
     async getCategoryById(req, res) {
 
@@ -63,6 +64,7 @@ class CategoryControllers {
 
     async updateCategory(req, res) {
 
+        console.log("alo")
         const id = req.params.id
         const { error, value } = Validator.categoryUpdateValidator.validate(req.body)
 
@@ -82,6 +84,18 @@ class CategoryControllers {
                 response.data
             ))
         }
+    }
+
+    async updateManyCategory(req, res) {
+
+        console.log("alo")
+        const response = await CategoryService.updateMany()
+
+        return res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+            response.data
+        ))
     }
 }
 

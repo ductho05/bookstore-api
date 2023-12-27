@@ -64,7 +64,7 @@ class Validator {
 
     categoryUpdateValidator = Joi.object({
         name: Joi.string().trim().min(1).max(255),
-        status: Joi.string().valid("Hoạt động", "Không hoạt động"),
+        status: Joi.boolean(),
         field: Joi.string().pattern(new RegExp(/^[a-fA-F0-9]{24,}$/))
     })
 
@@ -185,6 +185,11 @@ class Validator {
     soldValidator = Joi.object({
         sold: Joi.number().min(1).max(1000).required(),
         id: Joi.string().pattern(new RegExp(/^[a-fA-F0-9]{24}$/)).required()
+    })
+
+    forgetValidator = Joi.object({
+        email: Joi.string().email().required(),
+        password: Joi.string().required()
     })
 }
 

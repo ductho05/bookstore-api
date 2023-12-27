@@ -10,7 +10,7 @@ router.post("/insert", auhthorization, upload.single("images"), userController.i
 router.delete("/delete/:id", auhthorization, userController.removeUser)
 router.put("/update/:id", authentication, upload.single("images"), userController.updateUser)
 router.post("/search", auhthorization, userController.getAllUserByName)
-router.post("/", auhthorization, userController.getUserByEmail)
+router.post("/", userController.getUserByEmail)
 router.post("/filter/time", auhthorization, userController.getAllUserByTime)
 router.get("/", auhthorization, userController.getAllUser)
 router.post("/register", userController.registerUser)
@@ -18,5 +18,6 @@ router.post("/login", userController.loginUser)
 router.post("/login/facebook", userController.loginWithFacebook)
 router.post("/verify", userController.verifyOTP)
 router.get("/get/profile", authentication, userController.getProfile)
+router.post("/forgetpassword", userController.forgetPassword)
 
 module.exports = router

@@ -301,32 +301,46 @@ class ProductControllers {
         }
     }
 
+    async updateManyProduct(req, res) {
+
+        const id = req.body.id
+        const status = req.body.status
+
+        const response = await ProductService.updateMany(id, status)
+
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+            response.data
+        ))
+    }
+
     async updateSoldProduct(req, res) {
 
         //const id = req.params.id
         console.log("value1", req.body)
-       // const { error, value } = Validator.soldValidator.validate(...req.body)
-       // console.log("value2", value)   
-      
- 
-//         if (error) {
+        // const { error, value } = Validator.soldValidator.validate(...req.body)
+        // console.log("value2", value)   
 
-//             console.log(error)
-//             res.status(400).json(new Response(
-//                 Status.ERROR,
-//                 error.message
-//             ))
-//         } else {
 
-//             const sold = value.sold
-//             console.log("sold", sold)
-           const response = await ProductService.updateSold(req.body)
+        //         if (error) {
 
-            res.status(response.statusCode).json(new Response(
-                response.status,
-                response.message,
-              
-            ))
+        //             console.log(error)
+        //             res.status(400).json(new Response(
+        //                 Status.ERROR,
+        //                 error.message
+        //             ))
+        //         } else {
+
+        //             const sold = value.sold
+        //             console.log("sold", sold)
+        const response = await ProductService.updateSold(req.body)
+
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+
+        ))
         // }
     }
 

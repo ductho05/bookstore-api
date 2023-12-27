@@ -11,7 +11,7 @@ class ProductService {
 
         try {
 
-           // console.log(sort)
+            // console.log(sort)
             let customSort = { "updatedAt": -1 }
             if (sort) {
                 if (filter == "price") {
@@ -128,7 +128,7 @@ class ProductService {
             )
         } catch (err) {
 
-           // console.log(err)
+            // console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -508,7 +508,7 @@ class ProductService {
 
         } catch (err) {
 
-           // console.log(err)
+            // console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -535,7 +535,7 @@ class ProductService {
 
         } catch (err) {
 
-           // console.log(err)
+            // console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -595,7 +595,7 @@ class ProductService {
 
         } catch (err) {
 
-           // console.log(err)
+            // console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -630,7 +630,41 @@ class ProductService {
 
         } catch (err) {
 
-           // console.log(err)
+            // console.log(err)
+            return new ServiceResponse(
+                500,
+                Status.ERROR,
+                Messages.INTERNAL_SERVER
+            )
+        }
+    }
+    async updateMany(id, status) {
+
+        try {
+
+            await Product.updateMany({ categoryId: id }, { status_sell: status })
+
+            const products = await Product.find({ categoryId: id }).populate("categoryId")
+            if (products) {
+
+                return new ServiceResponse(
+                    200,
+                    Status.SUCCESS,
+                    Messages.UPDATE_DATA_SUCCESS,
+                    products
+                )
+            } else {
+
+                return new ServiceResponse(
+                    400,
+                    Status.ERROR,
+                    Messages.UPDATE_DATA_ERROR
+                )
+            }
+
+        } catch (err) {
+
+            console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -639,11 +673,9 @@ class ProductService {
         }
     }
 
-  
-
     async updateSold(req) {
-        const {list} = req
-        try {       
+        const { list } = req
+        try {
             async function updatePrices() {
                 for (const item of list) {
                     const result = await Product.findById({ _id: item.id }).exec();
@@ -656,15 +688,15 @@ class ProductService {
                 }
             }
 
-            updatePrices();            
+            updatePrices();
 
-       
-            if (true) {       
+
+            if (true) {
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,
                     Messages.UPDATE_DATA_SUCCESS,
-                   // newList
+                    // newList
                 )
             } else {
 
@@ -677,7 +709,7 @@ class ProductService {
 
         } catch (err) {
 
-           console.log(err)
+            console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -710,7 +742,7 @@ class ProductService {
 
         } catch (err) {
 
-           // console.log(err)
+            // console.log(err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,

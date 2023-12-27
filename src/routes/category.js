@@ -7,5 +7,6 @@ router.get("/", categoryController.getAllCategory)
 router.get("/:id", categoryController.getCategoryById)
 router.post("/", authorization, categoryController.addCategory)
 router.put("/:id", authorization, categoryController.updateCategory)
-//aaaa
+router.put("/update/many", authorization, categoryController.updateManyCategory)
+
 module.exports = router;

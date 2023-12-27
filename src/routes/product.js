@@ -24,5 +24,6 @@ router.get("/delete/:id", authorization, productController.deleteProduct)
 router.get("/bestseller-limit", productController.getProductBestSellerLimit)
 router.get("/maxcategory", productController.getNumProductByCategory)
 router.get("/rate", productController.getNumProductByRate)
+router.put("/many", authorization, productController.updateManyProduct)
 
 module.exports = router

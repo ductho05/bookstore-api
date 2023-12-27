@@ -11,6 +11,52 @@ const jwt = require('jsonwebtoken')
 
 class UserService {
 
+    async forgetPasswordUser(email, password) {
+        try {
+
+            const findUser = await User.findOne({ email }).exec()
+            if (findUser) {
+
+                const encryptedPassword = await bcrypt.hash(password, 10);
+                findUser.password = encryptedPassword
+
+                await findUser.save()
+
+                const token = jwt.sign(
+                    { isManager: findUser.isManager, email, id: findUser._id },
+                    constants.TOKEN_KEY,
+                    {
+                        expiresIn: constants.ExpiresIn,
+                    }
+                )
+
+                const userDTO = UserDTO.mapUserToUserDTO(findUser)
+
+                return new ServiceResponse(
+                    200,
+                    Status.SUCCESS,
+                    Messages.LOGIN_SUCCESS,
+                    userDTO,
+                    token
+                )
+            } else {
+
+                return new ServiceResponse(
+                    400,
+                    Status.ERROR,
+                    Messages.NOT_FOUND_USER
+                )
+            }
+        } catch (err) {
+
+            return new ServiceResponse(
+                500,
+                Status.ERROR,
+                Messages.INTERNAL_SERVER
+            )
+        }
+    }
+
     async login(email, password) {
         try {
 

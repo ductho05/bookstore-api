@@ -5,6 +5,28 @@ const Status = require("../utils/Status")
 
 class UserController {
 
+    async forgetPassword(req, res) {
+
+        const { error, value } = Validator.forgetValidator.validate(req.body)
+        if (error) {
+            res.status(400).json(new Response(
+                Status.ERROR,
+                error.message
+            ))
+        } else {
+
+            const response = await UserService.forgetPasswordUser(value.email, value.password)
+
+            res.status(response.statusCode).json(new Response(
+                response.status,
+                response.message,
+                response.data,
+                response.token
+            ))
+        }
+
+    }
+
     async verifyOTP(req, res) {
 
         const { error, value } = Validator.emailValidator.validate(req.body.email)
