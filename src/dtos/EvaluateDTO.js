@@ -27,15 +27,22 @@ class EvaluateDTO {
             const date = new Date(createdAt);
 
             const timeString = date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-            const dateString = date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            let dateString = date.toLocaleDateString('en-GB', {year: 'numeric' , month: '2-digit',  day: '2-digit'});
+            // const parts = dateString.split('/'); // Tách chuỗi thành mảng chứa ngày, tháng và năm
+            // // Sắp xếp lại mảng để định dạng yyyy/mm/dd
+            // const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+            dateString = dateString.split('/').reverse().join('/');            
 
-            createdAt = `${timeString} ${dateString}`;
+            console.log('dateString', dateString);
+            createdAt = `${dateString} ${timeString}`;
         }
 
         if (Object.keys(user).length > 0) {
             user = {
                 images: user.images,
-                fullName: user.fullName
+                fullName: user.fullName,
+                _id: user._id,
+                gender: user.gender
             }
         }
 
