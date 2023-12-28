@@ -76,7 +76,11 @@ class VoucherService {
 
         try {
             const newVoucher = new Voucher({ ...data })
-            newVoucher.save()
+            await newVoucher.save()
+           // await newVoucher.execPopulate("user");
+
+           await newVoucher.populate("user");
+
             if (newVoucher) {
                 return new ServiceResponse(
                     200,
