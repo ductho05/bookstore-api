@@ -236,7 +236,71 @@ class FlashUserService {
             )
         }
     }
+  async delete(id, updateFlash) {
+        // console.log('data21212', id, updateFlash);
 
+        // try {         
+        //     const product = await FlashUser.create(data);              
+        //   //  console.log(product);
+        //     // Đặt múi giờ cho Việt Nam
+        //     const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
+
+        //     // Lấy thời gian hiện tại ở Việt Nam
+        //     const currentTimeInVietnam = moment().tz(vietnamTimeZone);
+
+        //     // Lấy số giờ hiện tại
+        //     const currentHourInVietnam = currentTimeInVietnam.get('hours');
+        //     //const flash = await FlashUser.create(req.body);
+        //     const currentDate = new Date();
+        //     let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
+        //     let current_point_sale = Math.floor(currentHourInVietnam/3);
+            
+        //   //  console.log(toDay, current_point_sale);
+            
+        //     if (product) {
+        //         const flashSale = await FlashSale.find({ _id: data.flashid });
+        //       //  console.log('flashSale5rewf', flashSale);
+                
+        //         if (flashSale.length > 0) {
+        //             if (flashSale[0].sold_sale + data.mount <= flashSale[0].num_sale) {
+        //               //  console.log('flashSale212313213', flashSale[0].sold_sale , data.mount, flashSale[0].num_sale);
+        //                 flashSale[0].sold_sale += data.mount;
+        //                 await FlashSale.findByIdAndUpdate(flashSale[0]._id, flashSale[0]).exec();
+        //             }  
+        //             else {
+        //                 return new ServiceResponse(
+        //                     200,
+        //                     Status.ERROR,
+        //                     Messages.INSERT_DATA_ERROR
+        //                 )
+        //             }    
+        //           //  console.log("doremon ",  await FlashSale.find({ _id: data.flashid }))           
+        //         }            
+
+        //         return new ServiceResponse(
+        //             200,
+        //             Status.SUCCESS,
+        //             Messages.INSERT_DATA_SUCCESS,
+        //             product
+        //         )
+        //     } else {
+
+        //         return new ServiceResponse(
+        //             400,
+        //             Status.ERROR,
+        //             Messages.INSERT_DATA_ERROR
+        //         )
+        //     }    
+        // } catch (err) {
+        //   //  console.log('afdafdas', err);
+
+        //     return new ServiceResponse(
+        //         500,
+        //         Status.ERROR,
+        //         Messages.INTERNAL_SERVER
+        //     )
+        // }
+    }
     async update(id, updateFlash) {
 
         try {

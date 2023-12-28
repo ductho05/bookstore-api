@@ -81,6 +81,7 @@ class VoucherService {
 
     async update(id, data) {
         try {
+            console.log("data111", data)
             const updateData = await Voucher.findByIdAndUpdate(id, { ...data })
             if (updateData) {
                 return new ServiceResponse(

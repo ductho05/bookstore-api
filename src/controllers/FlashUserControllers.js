@@ -97,6 +97,21 @@ class FlashUserControllers {
         ))
     }
 
+    
+    // Xóa dữ liệu flashuser sách theo id
+    async deleteFlashUser(req, res) {
+
+        const id = req.params.id
+        const updateFlash = req.body
+        const response = await FlashUserService.delete(id, updateFlash)
+
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+            response.data
+        ))
+    }
+
     // Hàm kiểm tra và xóa Flash Sale hết hạn
     async checkAndDeleteExpiredSales(req, res) {
 

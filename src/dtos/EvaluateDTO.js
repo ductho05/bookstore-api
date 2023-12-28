@@ -33,7 +33,7 @@ class EvaluateDTO {
             // const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
             dateString = dateString.split('/').reverse().join('/');            
 
-            console.log('dateString', dateString);
+            // console.log('dateString', dateString);
             createdAt = `${dateString} ${timeString}`;
         }
 

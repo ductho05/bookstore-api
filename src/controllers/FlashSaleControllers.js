@@ -58,7 +58,7 @@ class FlashSaleControllers {
         var enddate = req.query.enddate;
 
         const response = await FlashSaleService.getProduct(categoryId, start, end, sort, filter, productId, date, point, enddate)
-console.log("flashSalesWithCategory: ", response);
+// console.log("flashSalesWithCategory: ", response);
         res.status(response.statusCode).json(new Response(
             response.status,
             response.message,
@@ -97,7 +97,7 @@ console.log("flashSalesWithCategory: ", response);
             response.data
         ))
 
-        console.log(response.message)
+        // console.log(response.message)
     }
 
     // Sửa dữ liệu sách theo id

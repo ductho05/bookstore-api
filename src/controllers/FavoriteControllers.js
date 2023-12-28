@@ -7,7 +7,7 @@ class FavoriteControllers {
 
   // Kiểm tra sản phẩm đã được thêm vào yêu thích hay chưa
   async checkFavorite(req, res) {
-    console.log(req.query.userid, req.query.productid);
+    // console.log(req.query.userid, req.query.productid);
     try {
       const data = await Favorite.findOne({
         userid: req.query.userid,
