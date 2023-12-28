@@ -22,7 +22,7 @@ const connect = (io) => {
 
         socket.on('send-notification', ({ type, userId, notification }) => {
 
-            // console.log("Gửi thông báo")
+            console.log("Gửi thông báo")
 
             io.emit('response-notification', { type, userId, notification })
         })

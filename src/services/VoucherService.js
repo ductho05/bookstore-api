@@ -16,21 +16,21 @@ class VoucherService {
             const codeFilter = req.query.code;
             const discountFilter = req.query.discount;
             const expriedFilter = req.query.expried;
-           // console.log(req.query);
-    
+            // console.log(req.query);
+
             const conditions = {};
-    
+
             if (statusFilter) conditions.status = statusFilter;
             if (userFilter) conditions.user = userFilter;
             if (codeFilter) conditions.code = codeFilter;
             if (discountFilter) conditions.discount = discountFilter;
             if (expriedFilter) conditions.expried = expriedFilter;
-    
+
             const data = await Voucher.find(conditions)
                 .populate("user")
                 .sort({ createdAt: -1 })
                 .exec();
-    
+
             return new ServiceResponse(
                 200,
                 Status.SUCCESS,
@@ -46,7 +46,31 @@ class VoucherService {
             );
         }
     }
-    
+
+    async getByName(code) {
+        try {
+
+            console.log(code)
+            const vouchers = await Voucher.find()
+
+            const newVouchers = vouchers.filter(voucher => voucher.code.startsWith(code))
+
+            return new ServiceResponse(
+                200,
+                Status.SUCCESS,
+                Messages.GET_DATA_SUCCESS,
+                newVouchers
+            )
+
+        } catch (err) {
+
+            return new ServiceResponse(
+                500,
+                Status.ERROR,
+                Messages.INTERNAL_SERVER
+            )
+        }
+    }
 
     async insert(data) {
 

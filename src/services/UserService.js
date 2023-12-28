@@ -254,7 +254,7 @@ class UserService {
                 const userDTO = UserDTO.mapUserToUserDTO(user)
 
                 return new ServiceResponse(
-                    400,
+                    200,
                     Status.SUCCESS,
                     Messages.REGISTER_SUCCESS,
                     userDTO,
@@ -498,6 +498,60 @@ class UserService {
                     Status.ERROR,
                     Messages.NOT_FOUND_USER
                 )
+            }
+
+        } catch (err) {
+            console.log(err)
+            return new ServiceResponse(
+                500,
+                Status.ERROR,
+                Messages.INTERNAL_SERVER
+            )
+        }
+    }
+
+    async updateEmail(id, email) {
+        try {
+
+            const findUser = await User.findOne({ email })
+            if (findUser) {
+
+                return new ServiceResponse(
+                    400,
+                    Status.ERROR,
+                    Messages.EMAIL_IS_EXIST
+                )
+            } else {
+
+                const userUpdate = await User.findByIdAndUpdate({ _id: id }, { email: email }).exec()
+
+                if (userUpdate) {
+
+                    const updatedUser = await User.findOne({ _id: userUpdate._id })
+                    const userDTO = UserDTO.mapUserToUserDTO(updatedUser)
+
+                    const token = jwt.sign(
+                        { isManager: updatedUser.isManager, email, id: updatedUser._id },
+                        constants.TOKEN_KEY,
+                        {
+                            expiresIn: constants.ExpiresIn,
+                        }
+                    )
+
+                    return new ServiceResponse(
+                        200,
+                        Status.SUCCESS,
+                        Messages.UPDATE_USER_SUCCESS,
+                        userDTO,
+                        token
+                    )
+                } else {
+                    return new ServiceResponse(
+                        400,
+                        Status.ERROR,
+                        Messages.NOT_FOUND_USER
+                    )
+                }
             }
 
         } catch (err) {

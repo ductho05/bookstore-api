@@ -286,6 +286,23 @@ class UserController {
             ))
         }
     }
+
+    async updateUserEmail(req, res) {
+
+        const id = req.id
+        const email = req.body.email
+
+        console.log(id, email)
+
+        const response = await UserService.updateEmail(id, email)
+
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+            response.data,
+            response.token
+        ))
+    }
 }
 
 module.exports = new UserController

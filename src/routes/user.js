@@ -19,5 +19,6 @@ router.post("/login/facebook", userController.loginWithFacebook)
 router.post("/verify", userController.verifyOTP)
 router.get("/get/profile", authentication, userController.getProfile)
 router.post("/forgetpassword", userController.forgetPassword)
+router.put("/email", authentication, userController.updateUserEmail)
 
 module.exports = router

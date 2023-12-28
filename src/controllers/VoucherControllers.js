@@ -8,7 +8,7 @@ class VoucherController {
 
     async getAllVoucher(req, res) {
 
-        
+
 
         const response = await VoucherService.getAll(req)
 
@@ -19,20 +19,33 @@ class VoucherController {
         ))
     }
 
-    async insertVoucher(req, res) {
-       
+    async getVoucherByName(req, res) {
 
-            const response = await VoucherService.insert(req.body)
+        const code = req.body.code
 
-            res.status(response.statusCode).json(new Response(
-                response.status,
-                response.message,
-                response.data
-            ))
-        
+        const response = await VoucherService.getByName(code)
+
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+            response.data
+        ))
     }
 
-    async updateVoucher(req, res) {       
+    async insertVoucher(req, res) {
+
+
+        const response = await VoucherService.insert(req.body)
+
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+            response.data
+        ))
+
+    }
+
+    async updateVoucher(req, res) {
 
         const id = req.params.id
         const response = await VoucherService.update(id, req.body)
@@ -42,8 +55,8 @@ class VoucherController {
             response.message,
             response.data
         ))
-    
-}
+
+    }
 }
 
 
