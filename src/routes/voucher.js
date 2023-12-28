@@ -8,7 +8,7 @@ const voucherController = require("../controllers/VoucherControllers");
 
 router.get("/", authentication, voucherController.getAllVoucher);
 router.post("/add", authorization, voucherController.insertVoucher);
-router.post("/update/:id", authorization, voucherController.updateVoucher);
+router.post("/update/:id", voucherController.updateVoucher);
 router.post("/get/name", authorization, voucherController.getVoucherByName);
 
 module.exports = router;

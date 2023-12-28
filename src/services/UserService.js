@@ -432,7 +432,8 @@ class UserService {
                 return new ServiceResponse(
                     200,
                     Status.SUCCESS,
-                    Messages.INSERT_USER_SUCCESS
+                    Messages.INSERT_USER_SUCCESS,
+                    user
                 )
             }
 
