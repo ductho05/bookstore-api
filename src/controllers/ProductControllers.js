@@ -318,7 +318,7 @@ class ProductControllers {
     async updateSoldProduct(req, res) {
 
         //const id = req.params.id
-        console.log("value1", req.body)
+        // console.log("value1", req.body)
         // const { error, value } = Validator.soldValidator.validate(...req.body)
         // console.log("value2", value)   
 

@@ -48,8 +48,12 @@ class VoucherController {
     async updateVoucher(req, res) {
 
         const id = req.params.id
-        const response = await VoucherService.update(id, req.body)
+        const data = req.body
 
+        console.log("data", data, id)
+        const response = await VoucherService.update(id, data)
+
+        // console.log(response)
         res.status(response.statusCode).json(new Response(
             response.status,
             response.message,

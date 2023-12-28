@@ -77,7 +77,7 @@ class FlashSaleService {
             //let current_point_sale = Math.floor(new Date().getHours() / 3);
             let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
 
-            console.log("toDayflash: ", toDay, current_point_sale);
+            // console.log("toDayflash: ", toDay, current_point_sale);
             // Lấy danh sách flash sale
             const flashSales = await FlashSale
 
@@ -199,7 +199,7 @@ class FlashSaleService {
                 }
             }
 
-            console.log("flashSalesWithCategory: ", flashSalesWithCategory);
+            // console.log("flashSalesWithCategory: ", flashSalesWithCategory);
 
             return new ServiceResponse(
                 200,
@@ -362,108 +362,132 @@ class FlashSaleService {
 
     async update(id, updateProduct, currentHourInVietnam, toDay) {
         // console.log("da vao daycurrentHourInVietnam", currentHourInVietnam)
+        console.log("da vao dayupdateProduct", updateProduct)
         try {
-            const result = await FlashSale.findByIdAndUpdate({ _id: id }, {...updateProduct, sold_sale: 0}).exec()
-            
-            await Product.findById(result.product).exec().then((product) => {
-                    //console.log("da vao d12121ay", updateProduct)
-                    // từ hiện tại đến hiện tại, đã có contain nên chỉ update giá
-                    if (result.date_sale == toDay && 
-                        result.point_sale == Math.floor(currentHourInVietnam/3) &&
-                        updateProduct.date_sale == toDay && 
-                        updateProduct.point_sale == Math.floor(currentHourInVietnam/3)) {
-                        product.price = product.old_price * (100 - updateProduct.current_sale)/100;
-                    }   
-                    // từ hiện tại đến tương lai, đã có contain nên chỉ update giá (giá là giá contain)
-                    if (result.date_sale == toDay && 
-                        result.point_sale == Math.floor(currentHourInVietnam/3) &&
-                        (
-                        updateProduct.date_sale > toDay || (updateProduct.date_sale == toDay && 
-                        updateProduct.point_sale > Math.floor(currentHourInVietnam/3)))) {
-                        product.price = product.containprice;
-                        product.containprice = 1;
-                    }   
-                    // từ tương lai đến tương lai, chưa có contain và cũng không cần update giá (giá chưa sale)
-                    if ((
-                        result.date_sale > toDay || (result.date_sale == toDay && 
-                        result.point_sale > Math.floor(currentHourInVietnam/3))) && (
+            if ('sold_sale' in updateProduct) {
+                // Nếu có, thực hiện cập nhật
+                const result = await FlashSale.findByIdAndUpdate({ _id: id }, {...updateProduct}).exec()
+                console.log("co chua nha")
+                if (result) {
+
+                    return new ServiceResponse(
+                        200,
+                        Status.SUCCESS,
+                        Messages.UPDATE_DATA_SUCCESS,
+                        updateProduct
+                    )
+                } else {
+    
+                    return new ServiceResponse(
+                        400,
+                        Status.ERROR,
+                        Messages.UPDATE_DATA_ERROR
+                    )
+                }
+            }
+            else {
+                const result = await FlashSale.findByIdAndUpdate({ _id: id }, {...updateProduct, sold_sale: 0}).exec()
+                await Product.findById(result.product).exec().then((product) => {
+                        //console.log("da vao d12121ay", updateProduct)
+                        // từ hiện tại đến hiện tại, đã có contain nên chỉ update giá
+                        if (result.date_sale == toDay && 
+                            result.point_sale == Math.floor(currentHourInVietnam/3) &&
+                            updateProduct.date_sale == toDay && 
+                            updateProduct.point_sale == Math.floor(currentHourInVietnam/3)) {
+                            product.price = product.old_price * (100 - updateProduct.current_sale)/100;
+                        }   
+                        // từ hiện tại đến tương lai, đã có contain nên chỉ update giá (giá là giá contain)
+                        if (result.date_sale == toDay && 
+                            result.point_sale == Math.floor(currentHourInVietnam/3) &&
+                            (
                             updateProduct.date_sale > toDay || (updateProduct.date_sale == toDay && 
                             updateProduct.point_sale > Math.floor(currentHourInVietnam/3)))) {
-                        product.price = product.price;
-                    }     // OK
-                    // từ tương lai đến hiện tại, chưa có contain nên cần tạo contain và update giá
-                    if ((
-                        result.date_sale > toDay || (result.date_sale == toDay && 
-                        result.point_sale > Math.floor(currentHourInVietnam/3))) && (
-                             (updateProduct.date_sale == toDay && 
-                            updateProduct.point_sale == Math.floor(currentHourInVietnam/3)))) {
-                                // console.log("da vao day", result, updateProduct)
-                        product.containprice = product.price;
-                        product.price = product.old_price * (100 - updateProduct.current_sale)/100;
-                    }        
+                            product.price = product.containprice;
+                            product.containprice = 1;
+                        }   
+                        // từ tương lai đến tương lai, chưa có contain và cũng không cần update giá (giá chưa sale)
+                        if ((
+                            result.date_sale > toDay || (result.date_sale == toDay && 
+                            result.point_sale > Math.floor(currentHourInVietnam/3))) && (
+                                updateProduct.date_sale > toDay || (updateProduct.date_sale == toDay && 
+                                updateProduct.point_sale > Math.floor(currentHourInVietnam/3)))) {
+                            product.price = product.price;
+                        }     // OK
+                        // từ tương lai đến hiện tại, chưa có contain nên cần tạo contain và update giá
+                        if ((
+                            result.date_sale > toDay || (result.date_sale == toDay && 
+                            result.point_sale > Math.floor(currentHourInVietnam/3))) && (
+                                (updateProduct.date_sale == toDay && 
+                                updateProduct.point_sale == Math.floor(currentHourInVietnam/3)))) {
+                                    // console.log("da vao day", result, updateProduct)
+                            product.containprice = product.price;
+                            product.price = product.old_price * (100 - updateProduct.current_sale)/100;
+                        }        
 
-                    // đến quá khứ, contain đưa về giá 1 và giá đưa về giá ban đầu
-                    if ((updateProduct.date_sale == toDay && 
-                            updateProduct.point_sale < Math.floor(currentHourInVietnam/3)) || updateProduct.date_sale < toDay) {
-                                // console.log("da vao day", result, updateProduct)
-                        // product.containprice = product.price;
-                        // product.price = product.old_price * (100 - updateProduct.current_sale)/100;
+                        // đến quá khứ, contain đưa về giá 1 và giá đưa về giá ban đầu
+                        if ((updateProduct.date_sale == toDay && 
+                                updateProduct.point_sale < Math.floor(currentHourInVietnam/3)) || updateProduct.date_sale < toDay) {
+                                    // console.log("da vao day", result, updateProduct)
+                            // product.containprice = product.price;
+                            // product.price = product.old_price * (100 - updateProduct.current_sale)/100;
 
-                        if (product.containprice == 1) {
-                            // từ không phải hiện tại
-                            product.price = product.price
+                            if (product.containprice == 1) {
+                                // từ không phải hiện tại
+                                product.price = product.price
+                                product.containprice = 1
+                            }
+                            else if (product.containprice != 1) {
+                                // từ hiện tại
+                            product.price = product.containprice
                             product.containprice = 1
-                        }
-                        else if (product.containprice != 1) {
-                            // từ hiện tại
-                           product.price = product.containprice
-                           product.containprice = 1
-                        }
-                    }  
+                            }
+                        }  
 
-                    // từ quá khứ đến hiện tại, đã có contain, cần cập nhập lại giá
-                    if ( (updateProduct.date_sale == toDay && 
-                        updateProduct.point_sale == Math.floor(currentHourInVietnam/3)) && (
-                            result.date_sale < toDay || (result.date_sale == toDay && 
-                                result.point_sale < Math.floor(currentHourInVietnam/3)))) {
+                        // từ quá khứ đến hiện tại, đã có contain, cần cập nhập lại giá
+                        if ( (updateProduct.date_sale == toDay && 
+                            updateProduct.point_sale == Math.floor(currentHourInVietnam/3)) && (
+                                result.date_sale < toDay || (result.date_sale == toDay && 
+                                    result.point_sale < Math.floor(currentHourInVietnam/3)))) {
+                            
+                            product.containprice = product.price
+                            product.price = product.old_price * (100 - updateProduct.current_sale)/100;
+                        }    
+
                         
-                        product.containprice = product.price
-                        product.price = product.old_price * (100 - updateProduct.current_sale)/100;
-                    }    
-
-                    
-                    // từ quá khứ đến tương lai, đã có contain, không cần cập nhập lại giá
-                    if ( (updateProduct.date_sale > toDay) || (updateProduct.date_sale == toDay && 
-                        updateProduct.point_sale > Math.floor(currentHourInVietnam/3)) && (
-                            result.date_sale < toDay || (result.date_sale == toDay && 
-                                result.point_sale < Math.floor(currentHourInVietnam/3)))) {
+                        // từ quá khứ đến tương lai, đã có contain, không cần cập nhập lại giá
+                        if ( (updateProduct.date_sale > toDay) || (updateProduct.date_sale == toDay && 
+                            updateProduct.point_sale > Math.floor(currentHourInVietnam/3)) && (
+                                result.date_sale < toDay || (result.date_sale == toDay && 
+                                    result.point_sale < Math.floor(currentHourInVietnam/3)))) {
+                            
+                            product.price = product.price
+                        }   
                         
-                        product.price = product.price
-                    }   
-                    
-                    // product.sold +=  flashSale.sold_sale; // update đã bán
-                    // product.price = product.containprice; // lấy lại giá ban đầu
-                    //console.log("da vao d212ay", product.price)
-                    product.save();
-                    // console.log("KQ", product)
-                });
-            //console.log("updateProduct: ", result, pro);
-            if (result) {
+                        // product.sold +=  flashSale.sold_sale; // update đã bán
+                        // product.price = product.containprice; // lấy lại giá ban đầu
+                        //console.log("da vao d212ay", product.price)
+                        product.save();
+                        // console.log("KQ", product)
+                    });
+                    if (result) {
 
-                return new ServiceResponse(
-                    200,
-                    Status.SUCCESS,
-                    Messages.UPDATE_DATA_SUCCESS,
-                    updateProduct
-                )
-            } else {
-
-                return new ServiceResponse(
-                    400,
-                    Status.ERROR,
-                    Messages.UPDATE_DATA_ERROR
-                )
+                        return new ServiceResponse(
+                            200,
+                            Status.SUCCESS,
+                            Messages.UPDATE_DATA_SUCCESS,
+                            updateProduct
+                        )
+                    } else {
+        
+                        return new ServiceResponse(
+                            400,
+                            Status.ERROR,
+                            Messages.UPDATE_DATA_ERROR
+                        )
+                    }
             }
+            //console.log("updateProduct: ", result, pro);
+           
 
         } catch (err) {
 

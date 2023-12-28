@@ -417,7 +417,7 @@ class OrderService {
             let vnpUrl = config.vnp_Url;
             let returnUrl = config.vnp_ReturnUrl;
             let orderId = moment(date).format('DDHHmmss');
-            let amount = req.query.amount;nb
+            let amount = req.query.amount;
             let bankCode = '';
 
             // let locale = req.body.language;
@@ -467,6 +467,7 @@ class OrderService {
                 obj
             )
         } catch (err) {
+            console.log('err11', err)
             return new ServiceResponse(
                 500,
                 Status.ERROR,
@@ -496,7 +497,7 @@ class OrderService {
             // let signed = hmac.update(new Buffer(signData, 'utf-8')).digest("hex");
             const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
 
-            console.log("day ne dddc", signed)
+            // console.log("day ne dddc", signed)
             res.redirect(`${constants.urlui}/checkout?signed=${req.query.vnp_TxnRef}&status=${req.query.vnp_ResponseCode}`)
             // return new ServiceResponse(
             //     200,
