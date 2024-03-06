@@ -42,16 +42,16 @@ class FavoriteControllers {
       ).populate({
         path: 'productid',
         populate: {
-            path: 'categoryId',
-            model: 'Category' // Tên của mô hình Category
+          path: 'categoryId',
+          model: 'Category' // Tên của mô hình Category
         }
-    })
-    .populate({
-        path: 'userid',
-    })
-      
-      
-      .exec();
+      })
+        .populate({
+          path: 'userid',
+        })
+
+
+        .exec();
       if (data) {
         resObj.status = "OK";
         resObj.message = "Found comment successfully";
@@ -75,10 +75,20 @@ class FavoriteControllers {
   async addFavorite(req, res) {
     try {
       const data = await Favorite.create(req.body);
+      const favorite = await Favorite.findOne({ _id: data._id }).populate({
+        path: 'productid',
+        populate: {
+          path: 'categoryId',
+          model: 'Category' // Tên của mô hình Category
+        }
+      })
+        .populate({
+          path: 'userid',
+        }).exec()
       if (data) {
         resObj.status = "OK";
         resObj.message = "Add favorite successfully";
-        resObj.data = data;
+        resObj.data = favorite;
         return res.json(resObj);
       } else {
         resObj.status = "Failed";
