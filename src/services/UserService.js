@@ -224,7 +224,7 @@ class UserService {
         }
     }
 
-    async register(email, password) {
+    async register(email, password, fullName) {
         try {
 
             const oldUser = await User.findOne({ email })
@@ -239,7 +239,8 @@ class UserService {
                 const encryptedPassword = await bcrypt.hash(password, 10);
                 const user = new User({
                     email: email.toLowerCase(),
-                    password: encryptedPassword
+                    password: encryptedPassword,
+                    fullName
                 })
 
                 await user.save()
@@ -262,6 +263,36 @@ class UserService {
                 )
             }
         } catch (err) {
+            return new ServiceResponse(
+                500,
+                Status.ERROR,
+                Messages.INTERNAL_SERVER
+            )
+        }
+    }
+
+    async activeUser(email) {
+
+        try {
+            const findUser = await User.findOne({ email })
+
+            if (findUser) {
+
+                await User.updateOne({ email }, { isActive: true })
+
+                return new ServiceResponse(
+                    200,
+                    Status.SUCCESS,
+                    Messages.UPDATE_USER_SUCCESS
+                )
+            } else {
+                return new ServiceResponse(
+                    404,
+                    Status.ERROR,
+                    Messages.NOT_FOUND_USER
+                )
+            }
+        } catch (e) {
             return new ServiceResponse(
                 500,
                 Status.ERROR,

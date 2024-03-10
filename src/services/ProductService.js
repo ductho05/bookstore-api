@@ -107,9 +107,9 @@ class ProductService {
                     ]
                 })
                 .populate("categoryId")
+                .sort(customSort)
                 .skip(start)
                 .limit(end)
-                .sort(customSort)
 
             const quantity = await Product
                 .find({

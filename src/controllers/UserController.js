@@ -37,7 +37,7 @@ class UserController {
             ))
         } else {
             const email = value
-            const otp = Math.floor(1000 + Math.random() * 1000000)
+            const otp = Math.floor(1000 + Math.random() * 10000)
             const subject = "Xác nhận mã OTP"
             const html = `<div>Mã xác thực OTP <p style='font-size: 16px; color: red'; font-weight: 500;>${otp}</p></div>`
 
@@ -112,7 +112,7 @@ class UserController {
     async registerUser(req, res) {
 
         const { error, value } = Validator.authValidator.validate(req.body)
-        const { email, password } = value
+        const { email, password, fullName } = value
 
         if (error) {
             res.status(400).json(new Response(
@@ -120,13 +120,32 @@ class UserController {
                 error.message
             ))
         } else {
-            const response = await UserService.register(email, password)
+            const response = await UserService.register(email, password, fullName)
 
             res.status(response.statusCode).json(new Response(
                 response.status,
                 response.message,
                 response.data,
                 response.token
+            ))
+        }
+    }
+
+    async active(req, res) {
+
+        const { error, value } = Validator.emailValidator.validate(req.body.email)
+
+        if (error) {
+            res.status(400).json(new Response(
+                Status.ERROR,
+                error.message
+            ))
+        } else {
+            const response = await UserService.activeUser(value)
+
+            res.status(response.statusCode).json(new Response(
+                response.status,
+                response.message
             ))
         }
     }
