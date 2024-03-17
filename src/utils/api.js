@@ -1,4 +1,4 @@
-const isDeploy = false;
+const isDeploy = process.env.NODE_ENV === "production";
 
 class Constants {
   TOKEN_KEY = "ductho2002";
