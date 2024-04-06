@@ -485,13 +485,23 @@ class UserService {
     }
   }
 
-  async updateTas(id, tas) {
+  async updateTas(id, tas, action) {
     try {
-      await User.findByIdAndUpdate({ _id: id }, { tas: tas }).exec();
+      // lấy giá trị tas hiện tại
+      const tasUser = await User.findOne({ _id: id }).exec();
+      // lấy giá trị tas hiện tại
+      const tasCurrent = tasUser.tas;
+      // ép kiểu tas về số
+      tas = parseInt(tas);
+      const user = await User.findByIdAndUpdate(
+        { _id: id },
+        { tas: action === "add" ? tasCurrent + tas : tasCurrent - tas }
+      ).exec();
       return new ServiceResponse(
         200,
         Status.SUCCESS,
-        Messages.UPDATE_USER_SUCCESS
+        Messages.UPDATE_USER_SUCCESS,
+        user
       );
     } catch (err) {
       console.log(err);
