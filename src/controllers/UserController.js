@@ -323,6 +323,21 @@ class UserController {
             response.token
         ))
     }
+
+    async updateTas(req, res) {
+
+        const id = req.id
+        const tas = req.body.tas
+
+        console.log(id, tas)
+
+        const response = await UserService.updateTas(id, tas)
+
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+        ))
+    }
 }
 
 module.exports = new UserController

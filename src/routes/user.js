@@ -21,5 +21,6 @@ router.post("/verify", userController.verifyOTP)
 router.get("/get/profile", authentication, userController.getProfile)
 router.post("/forgetpassword", userController.forgetPassword)
 router.put("/email", authentication, userController.updateUserEmail)
+router.post("/updatetas", authentication, userController.updateTas)
 
 module.exports = router
