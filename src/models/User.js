@@ -1,12 +1,16 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const User = new Schema({
+const User = new Schema(
+  {
     isManager: { type: Boolean, default: false },
     username: { type: String, require: true },
     password: { type: String, require: true },
     fullName: { type: String, default: "" },
-    images: { type: String, default: "https://www.iconpacks.net/icons/1/free-user-icon-972-thumb.png" },
+    images: {
+      type: String,
+      default: "https://www.iconpacks.net/icons/1/free-user-icon-972-thumb.png",
+    },
     gender: { type: String, default: "" },
     email: { type: String, require: true },
     address: { type: String, default: "" },
@@ -19,10 +23,16 @@ const User = new Schema({
     device_token: { type: String },
     isLock: { type: Boolean, default: false },
     isActive: { type: Boolean, default: false },
+    tas: {
+      type: Number,
+      default: 0,
+    },
     order: { type: mongoose.Schema.Types.ObjectId, ref: "Order" },
-    cart: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" }
-}, {
-    timestamps: true
-})
+    cart: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = mongoose.model('User', User)
+module.exports = mongoose.model("User", User);
