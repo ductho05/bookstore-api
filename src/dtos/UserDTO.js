@@ -1,7 +1,7 @@
 
 class UserDTO {
 
-    constructor(_id, isManager, fullName, images, gender, address, city, phoneNumber, birth, email, sw_id, isLock, isActive) {
+    constructor(_id, isManager, fullName, images, gender, address, city, phoneNumber, birth, email, sw_id, isLock, isActive, device_token) {
 
         this._id = _id
         this.isManager = isManager
@@ -16,6 +16,7 @@ class UserDTO {
         this.sw_id = sw_id
         this.isLock = isLock
         this.isActive = isActive
+        this.device_token = device_token
     }
 
     mapUserToUserDTO(user) {
@@ -32,10 +33,11 @@ class UserDTO {
             email,
             sw_id,
             isLock,
-            isActive
+            isActive,
+            device_token
         } = user
 
-        return new UserDTO(_id, isManager, fullName, images, gender, address, city, phoneNumber, birth, email, sw_id, isLock, isActive)
+        return new UserDTO(_id, isManager, fullName, images, gender, address, city, phoneNumber, birth, email, sw_id, isLock, isActive, device_token)
     }
 
 }

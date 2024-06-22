@@ -56,7 +56,8 @@ class Validator {
             new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/)
         ),
         isManager: Joi.boolean(),
-        isLock: Joi.boolean()
+        isLock: Joi.boolean(),
+        device_token: Joi.string()
     })
 
     categoryValidator = Joi.object({
@@ -82,7 +83,9 @@ class Validator {
         description: Joi.string().trim().min(1).required(),
         image: Joi.string().required(),
         url: Joi.string().pattern(new RegExp(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}/)).required(),
-        user: Joi.string().pattern(new RegExp(/^[a-fA-F0-9]{24}$/))
+        user: Joi.string().pattern(new RegExp(/^[a-fA-F0-9]{24}$/)),
+        largeImage: Joi.string(),
+        linking: Joi.string()
     })
 
     orderValidator = Joi.object({
@@ -97,7 +100,7 @@ class Validator {
         price: Joi.number().min(1).required(),
         payment_method: Joi.string().trim().min(1).required(),
         shipping_method: Joi.string().trim().min(1).required(),
-        deliveryDate: Joi.string().trim().min(1).required(),
+        deliveryDate: Joi.string(),
         shippingCost: Joi.number().min(1).required(),
         message: Joi.string().allow(null, '').optional(),
         user: Joi.string().pattern(new RegExp(/^[a-fA-F0-9]{24}$/)).required(),

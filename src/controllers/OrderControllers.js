@@ -149,7 +149,7 @@ class OrderController {
 
         // console.log('adgjasd', req.body)
 
-            const { flashsales, items, ...data } = req.body;
+        const { flashsales, items, ...data } = req.body;
         // Đặt múi giờ cho Việt Nam
         const vietnamTimeZone = 'Asia/Ho_Chi_Minh';
 
@@ -161,12 +161,13 @@ class OrderController {
         //const flash = await FlashUser.create(req.body);
         const currentDate = new Date();
         let toDay = format(currentDate, 'yyyy-MM-dd', { timeZone: 'Asia/Ho_Chi_Minh' });
-        let current_point_sale = Math.floor(currentHourInVietnam/3);
-        
+        let current_point_sale = Math.floor(currentHourInVietnam / 3);
+
         const { error, value } = Validator.orderValidator.validate(data)
         // console.log('flashsales1', flashsales, data, items)
         if (error) {
 
+            console.log(error)
             res.status(400).json(new Response(
                 Status.ERROR,
                 error.message
@@ -176,7 +177,7 @@ class OrderController {
             //console.log('flashsales132', items)     
             // Kiểm tra product còn trong kho hay không
             // Check trường hợp có cả product và flashsale
-            const listID = []   
+            const listID = []
             items.forEach(item => {
                 if (!listID.includes(item.product._id)) {
                     listID.push(item.product._id)
@@ -187,7 +188,7 @@ class OrderController {
                     // cộng dồn số lượng
                     items[index].quantity += item.quantity
                 }
-            })   
+            })
 
             const ProductPromises = items.map(async (item) => {
                 const produc = await Product.find({ _id: item.product._id });
@@ -195,8 +196,7 @@ class OrderController {
                     //console.log("da vao roi nha")
                     return 'No' + produc[0]._id
                 }
-                else 
-                {
+                else {
                     return 'OK'
                 }
             })
@@ -204,8 +204,8 @@ class OrderController {
 
             // Kiểm tra có đơn hàng có vượt quá chương trình FL
             const flashSalePromises = flashsales.map(async (item) => {
-                
-                const flashSale = await FlashSale.find({ _id: item.flashid});
+
+                const flashSale = await FlashSale.find({ _id: item.flashid });
                 if (flashSale.length > 0) {
                     if (flashSale[0].sold_sale + item.mount > flashSale[0].num_sale) {
                         return 'Not quantity' + flashSale[0]._id
@@ -217,30 +217,30 @@ class OrderController {
                 return 'OK'
             });
 
-          
 
-           
-    
+
+
+
             const productResults = await Promise.all(ProductPromises);
             const flashSaleResults = await Promise.all(flashSalePromises);
             // // 'Not quantity'
-    
+
             //console.log('flashSaleResults', productResults);
 
             if (flashSaleResults.filter(item => item.includes('Not quantity')).length > 0) {
                 // console.log('da vao day roi ne')
-                const flashs = flashSaleResults.filter(item => item.includes('Not quantity')).map(item => item.split('Not quantity')[1])           
-                
+                const flashs = flashSaleResults.filter(item => item.includes('Not quantity')).map(item => item.split('Not quantity')[1])
+
                 return res.status(200).json(new Response(
                     Status.ERROR_FLASH_SALE,
                     'Số lượng sản phẩm trong flash sale không đủ',
                     flashs
                 ))
-            }           
+            }
 
             if (productResults.filter(item => item.includes('No')).length > 0) {
                 // console.log('da vao day roi ne')
-                const flashs = productResults.filter(item => item.includes('No')).map(item => item.split('No')[1])           
+                const flashs = productResults.filter(item => item.includes('No')).map(item => item.split('No')[1])
                 // console.log('flashs', flashs)
                 return res.status(200).json(new Response(
                     Status.ERROR401,
@@ -249,16 +249,16 @@ class OrderController {
                 ))
             }
 
-           
-                // console.log('value, da vao day12312', value)
-                const response = await OrderService.insert(value)
 
-                res.status(response.statusCode).json(new Response(
-                    response.status,
-                    response.message,
-                    response.data
-                ))
-            
+            // console.log('value, da vao day12312', value)
+            const response = await OrderService.insert(value)
+
+            res.status(response.statusCode).json(new Response(
+                response.status,
+                response.message,
+                response.data
+            ))
+
         }
     }
 

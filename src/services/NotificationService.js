@@ -7,6 +7,8 @@ const UserNotification = require("../models/UserNotification")
 const configWebPush = require("../config/webpush")
 const webpush = require('web-push')
 const UserNotificationDTO = require("../dtos/UserNotificationDTO")
+const moment = require('moment')
+const admin = require("../config/firebaseAdmin")
 
 configWebPush()
 
@@ -41,6 +43,15 @@ class NotificationService {
         try {
 
             const notification = new Notification({ ...data })
+            const mobileNotification = {
+                title: notification.title,
+                body: notification.description,
+            }
+            const mobileData = {
+                linking: notification.linking,
+                image: notification.image,
+                largeImage: notification.largeImage
+            }
 
             await notification.save()
             if (filter === "all") {
@@ -51,6 +62,16 @@ class NotificationService {
                             user.sw_id,
                             JSON.stringify(notification)
                         )
+                    }
+                    if (user.device_token) {
+                        const message = {
+                            notification: mobileNotification,
+                            data: mobileData,
+                            token: user.device_token,
+                        };
+                        admin.messaging().send(message).then((_) => {
+
+                        })
                     }
                     const userNotification = new UserNotification({
                         user: user._id,
@@ -69,6 +90,16 @@ class NotificationService {
                                 JSON.stringify(notification)
                             )
                         }
+                        if (user.device_token) {
+                            const message = {
+                                notification: mobileNotification,
+                                data: mobileData,
+                                token: user.device_token,
+                            };
+                            admin.messaging().send(message).then((response) => {
+
+                            })
+                        }
                         const userNotification = new UserNotification({
                             user: user._id,
                             notification: notification._id
@@ -80,11 +111,21 @@ class NotificationService {
             } else {
                 const user = await User.findOne({ _id: notification.user }).exec()
 
-                if (user.sw_id) {
-                    webpush.sendNotification(
-                        user.sw_id,
-                        JSON.stringify(notification)
-                    )
+                // if (user.sw_id) {
+                //     webpush.sendNotification(
+                //         user.sw_id,
+                //         JSON.stringify(notification)
+                //     )
+                // }
+                if (user.device_token) {
+                    const message = {
+                        notification: mobileNotification,
+                        data: mobileData,
+                        token: user.device_token,
+                    };
+                    admin.messaging().send(message).then((_) => {
+
+                    })
                 }
                 const userNotification = new UserNotification({
                     user: user._id,
@@ -114,8 +155,9 @@ class NotificationService {
     async getAllByUser(id) {
 
         try {
+            const startDate = moment().subtract(10, 'days').toDate();
 
-            const list = await UserNotification.find({ user: id })
+            const list = await UserNotification.find({ user: id, createdAt: { $gte: startDate } })
                 .populate("user")
                 .populate("notification")
                 .sort({ createdAt: -1 })

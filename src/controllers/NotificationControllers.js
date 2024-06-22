@@ -2,8 +2,31 @@ const NotificationService = require("../services/NotificationService")
 const Response = require("../response/Response")
 const Validator = require("../validator/Validator")
 const Status = require("../utils/Status")
+const admin = require("../config/firebaseAdmin")
 
 class NotificationControllers {
+
+    async sendMobileNotification(req, res) {
+
+        const deviceToken = req.params.token
+
+        const message = {
+            notification: {
+                title: 'New Notification',
+                body: 'This is a new notification',
+            },
+            token: deviceToken,
+        };
+
+        admin.messaging().send(message).then((response) => {
+            console.log('Successfully sent message: ', response);
+            res.status(200).json(response);
+        })
+            .catch((error) => {
+                console.log('Error sending message: ', error);
+                res.status(400).json(error);
+            });
+    }
 
     async handlePushNotificationSubcription(req, res) {
 
