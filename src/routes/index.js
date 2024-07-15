@@ -3,6 +3,7 @@ const orderItemRouter = require("./orderItem")
 const productRouter = require("./product")
 const flashsaleRouter = require("./flashsale")
 const userRouter = require("./user")
+const shipperRouter = require("./shipper")
 const categoryRouter = require("./category")
 const uploadFileRouter = require("./uploadFiles")
 const evaluateRouter = require("./evaluate")
@@ -21,6 +22,7 @@ function route(app) {
   app.use("/bookstore/api/v1/products", productRouter);
   app.use("/bookstore/api/v1/flashsales", flashsaleRouter);
   app.use("/bookstore/api/v1/users", userRouter);
+  app.use("/bookstore/api/v1/shippers", shipperRouter);
   app.use("/bookstore/api/v1/", uploadFileRouter);
   app.use("/bookstore/api/v1/evaluates", evaluateRouter);
   app.use("/bookstore/api/v1/comments", commentRouter);

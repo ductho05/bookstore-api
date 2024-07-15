@@ -2,7 +2,7 @@
 class OrderDTO {
 
     constructor(_id, name, address, city, country, districs, wards, phone, quantity, price, 
-        message, status, payment_method, shipping_method, deliveryDate, shippingCost, createdAt,date, user) {
+        message, status, payment_method, shipping_method, deliveryDate, shippingCost, createdAt,date, user, shipper) {
 
         this._id = _id
         this.name = name
@@ -23,6 +23,7 @@ class OrderDTO {
         this.createdAt = createdAt
         this.date = date
         this.user = user
+        this.shipper = shipper
     }
 
     mapToOrderDTO(order) {
@@ -45,7 +46,8 @@ class OrderDTO {
             shippingCost,
             createdAt,
             date,
-            user
+            user,
+            shipper
         } = order
 
         if (createdAt) {
@@ -65,8 +67,19 @@ class OrderDTO {
             }
         }
 
+        if (Object.keys(shipper).length > 0) {
+            shipper = {
+                // ...shipper,
+
+                id: shipper._id,
+                images: shipper.images,
+                fullName: shipper.fullName
+                
+            }
+        }
+
         return new OrderDTO(_id, name, address, city, country, districs, wards, phone, quantity, price,
-            message, status, payment_method, shipping_method, deliveryDate, shippingCost, createdAt,date, user)
+            message, status, payment_method, shipping_method, deliveryDate, shippingCost, createdAt,date, user, shipper)
     }
 
 }

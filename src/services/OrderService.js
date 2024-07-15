@@ -69,7 +69,7 @@ class OrderService {
     }
   }
 
-  async getAllByUser(page, limit, status, id, user) {
+  async getAllByUser(page, limit, status, city, id, user, shipper) {
     try {
       var orderList = [];
       if (user) {
@@ -78,9 +78,64 @@ class OrderService {
           .sort({ updatedAt: -1 })
           .skip((page - 1) * limit)
           .limit(limit);
+      } else if (shipper) {
+        orderList = await Order.find({
+          shipper,
+          status: new RegExp(status, "i"),
+        })
+          .populate("shipper")
+          .sort({ updatedAt: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit);
+      } else if (city) {
+        console.log(city, "city");
+        const regex = new RegExp(city, "i");
+        orderList = await Order.find({
+          city: regex,
+        })
+          .find({
+            status: new RegExp(status, "i"),
+          })
+          .populate("shipper")
+          .populate("user")
+          .sort({ updatedAt: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit);
       } else {
         orderList = await Order.find({ status: new RegExp(status, "i") })
           .populate("user")
+          .sort({ updatedAt: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit);
+      }
+
+      return new ServiceResponse(
+        200,
+        Status.SUCCESS,
+        Messages.GET_DATA_SUCCESS,
+        orderList
+      );
+    } catch (err) {
+      console.log(err);
+      return new ServiceResponse(500, Status.ERROR, Messages.INTERNAL_SERVER);
+    }
+  }
+
+  async getAllByShipper(page, limit, status, id, shipper) {
+    try {
+      var orderList = [];
+      if (shipper) {
+        orderList = await Order.find({
+          shipper,
+          status: new RegExp(status, "i"),
+        })
+          .populate("shipper")
+          .sort({ updatedAt: -1 })
+          .skip((page - 1) * limit)
+          .limit(limit);
+      } else {
+        orderList = await Order.find({ status: new RegExp(status, "i") })
+          .populate("shipper")
           .sort({ updatedAt: -1 })
           .skip((page - 1) * limit)
           .limit(limit);
@@ -211,7 +266,10 @@ class OrderService {
 
   async getById(id) {
     try {
-      const order = await Order.findOne({ _id: id }).populate("user").exec();
+      const order = await Order.findOne({ _id: id })
+        .populate("user")
+        .populate("shipper")
+        .exec();
 
       if (order) {
         const orderDTO = OrderDTO.mapToOrderDTO(order);

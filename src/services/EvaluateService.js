@@ -270,6 +270,25 @@ class EvaluateService {
       return new ServiceResponse(500, Status.ERROR, Messages.INTERNAL_SERVER);
     }
   }
+
+  async delete(evaluate) {
+    try {
+      const evaluateDelete = await Evaluate.findOneAndDelete({
+        _id: evaluate,
+      }).exec();
+      if (evaluateDelete) {
+        return new ServiceResponse(
+          200,
+          Status.SUCCESS,
+          Messages.DELETE_EVALUATE_SUCCESS
+        );
+      } else {
+        return new ServiceResponse(400, Status.ERROR, Messages.NOT_FOUND_DATA);
+      }
+    } catch (err) {
+      return new ServiceResponse(500, Status.ERROR, Messages.INTERNAL_SERVER);
+    }
+  }
 }
 
 module.exports = new EvaluateService();

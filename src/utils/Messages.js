@@ -23,21 +23,35 @@ class Messages {
 
     USER_EXISTS = "Account is exists"
 
+    SHIPPER_EXISTS = "Account is exists"
+
     REGISTER_SUCCESS = "Register successfully"
 
     GET_USER_SUCCESS = "Get user list successfully"
+    
+    GET_SHIPPER_SUCCESS = "Get user list successfully"
 
     GET_ONE_USER_SUCCESS = "Get one user successfully"
 
     NOT_FOUND_USER = "Not found user"
 
     INSERT_USER_SUCCESS = "Insert user successfully"
+    
+    GET_ONE_SHIPPER_SUCCESS = "Get one user successfully"
+
+    NOT_FOUND_SHIPPER = "Not found user"
+
+    INSERT_SHIPPER_SUCCESS = "Insert user successfully"
 
     INSERT_EVALUATE_SUCCESS = "Insert evaluate successfully"
 
     REMOVE_USER_SUCCESS = "Remove user successfully"
 
     UPDATE_USER_SUCCESS = "Update user successfully"
+    
+    REMOVE_SHIPPER_SUCCESS = "Remove user successfully"
+
+    UPDATE_SHIPPER_SUCCESS = "Update user successfully"
 
     GET_CATEGORY_SUCCESS = "Get category successfully"
 
@@ -95,6 +109,8 @@ class Messages {
     NOT_ENOUGH_QUANTITY = "Not enough quantity"
     ERROR_PRICE = "Giá cũ phải lớn hơn hoặc bằng giá hiện tại"
     EMAIL_IS_EXIST = "Email đã được sử dụng"
+
+    DELETE_EVALUATE_SUCCESS = "Delete evaluate successfully"
 }
 
 module.exports = new Messages
