@@ -7,6 +7,8 @@ const Notification = new Schema(
         description: { type: String, required: true },
         image: { type: String, required: true },
         url: { type: String, required: true },
+        largeImage: String,
+        linking: String,
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
     },
     {

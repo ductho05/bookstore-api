@@ -9,5 +9,6 @@ router.post("/send", authentication, NotificationControllers.sendPushNotificatio
 router.post("/get", authentication, NotificationControllers.getAllNotificationsByUser)
 router.get("/get-all", auhthorization, NotificationControllers.getAllNotifications)
 router.put("/", authentication, NotificationControllers.updateUserNotification)
+router.get("/send-mobile/:token", NotificationControllers.sendMobileNotification)
 
 module.exports = router

@@ -112,17 +112,15 @@ class Validator {
       .required(),
   });
 
-  notificationValidator = Joi.object({
-    title: Joi.string().trim().min(1).required(),
-    description: Joi.string().trim().min(1).required(),
-    image: Joi.string().required(),
-    url: Joi.string()
-      .pattern(
-        new RegExp(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}/)
-      )
-      .required(),
-    user: Joi.string().pattern(new RegExp(/^[a-fA-F0-9]{24}$/)),
-  });
+    notificationValidator = Joi.object({
+        title: Joi.string().trim().min(1).required(),
+        description: Joi.string().trim().min(1).required(),
+        image: Joi.string().required(),
+        url: Joi.string().pattern(new RegExp(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}/)).required(),
+        user: Joi.string().pattern(new RegExp(/^[a-fA-F0-9]{24}$/)),
+        largeImage: Joi.string(),
+        linking: Joi.string()
+    })
 
   orderValidator = Joi.object({
     name: Joi.string().trim().min(3).max(255).required(),
