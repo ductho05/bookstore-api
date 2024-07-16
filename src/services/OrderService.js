@@ -272,6 +272,7 @@ class OrderService {
         .exec();
 
       if (order) {
+        console.log("order", order)
         const orderDTO = OrderDTO.mapToOrderDTO(order);
 
         return new ServiceResponse(
@@ -284,6 +285,7 @@ class OrderService {
         return new ServiceResponse(404, Status.ERROR, Messages.NOT_FOUND_DATA);
       }
     } catch (err) {
+      console.log(err)
       return new ServiceResponse(500, Status.ERROR, Messages.INTERNAL_SERVER);
     }
   }
