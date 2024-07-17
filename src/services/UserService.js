@@ -424,6 +424,7 @@ class UserService {
 
       if (userUpdate) {
         const updatedUser = await User.findOne({ _id: userUpdate._id });
+
         const userDTO = UserDTO.mapUserToUserDTO(updatedUser);
 
         return new ServiceResponse(

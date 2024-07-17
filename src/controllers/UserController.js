@@ -256,6 +256,7 @@ class UserController {
     }
 
     if (error) {
+      console.log(error)
       res.status(400).json(new Response(Status.ERROR, error.message));
     } else {
       const response = await UserService.update({ _id: id }, value);

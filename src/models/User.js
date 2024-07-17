@@ -17,6 +17,7 @@ const User = new Schema(
     city: { type: String, default: "" },
     phoneNumber: { type: String, required: false },
     birth: { type: String, default: "" },
+    point: { type: Number, default: 0 },
     facebookId: { type: String, require: true },
     sw_id: { type: Object },
     socket_id: { type: String },
