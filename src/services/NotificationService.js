@@ -90,16 +90,16 @@ class NotificationService {
                                 JSON.stringify(notification)
                             )
                         }
-                        if (user.device_token) {
-                            const message = {
-                                notification: mobileNotification,
-                                data: mobileData,
-                                token: user.device_token,
-                            };
-                            admin.messaging().send(message).then((response) => {
+                        // if (user.device_token) {
+                        //     const message = {
+                        //         notification: mobileNotification,
+                        //         data: mobileData,
+                        //         token: user.device_token,
+                        //     };
+                        //     admin.messaging().send(message).then((response) => {
 
-                            })
-                        }
+                        //     })
+                        // }
                         const userNotification = new UserNotification({
                             user: user._id,
                             notification: notification._id

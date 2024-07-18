@@ -45,24 +45,13 @@ class NotificationControllers {
     async sendPushNotification(req, res) {
 
         const filter = req.body.filter
-        const { error, value } = Validator.notificationValidator.validate(req.body.notification)
+        const response = await NotificationService.send(filter, req.body.notification)
 
-        if (error) {
-
-            res.status(400).json(new Response(
-                Status.ERROR,
-                error.message
-            ))
-
-        } else {
-            const response = await NotificationService.send(filter, value)
-
-            res.status(response.statusCode).json(new Response(
-                response.status,
-                response.message,
-                response.data
-            ))
-        }
+        res.status(response.statusCode).json(new Response(
+            response.status,
+            response.message,
+            response.data
+        ))
     }
 
     async getAllNotificationsByUser(req, res) {
